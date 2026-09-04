@@ -1,0 +1,42 @@
+<div class="section-card">
+  <h3>My Profile</h3>
+
+  <div class="success-msg" *ngIf="msg">{{ msg }}</div>
+
+  <!-- View Mode -->
+  <table class="info-table" *ngIf="!editMode && patientProfile">
+    <tr><td><strong>Name:</strong></td><td>{{ patientProfile.full_name }}</td></tr>
+    <tr><td><strong>Patient ID:</strong></td><td>{{ patientProfile.patient_id }}</td></tr>
+    <tr><td><strong>Contact:</strong></td><td>{{ patientProfile.contact_number }}</td></tr>
+    <tr><td><strong>Email:</strong></td><td>{{ patientProfile.email_address }}</td></tr>
+    <tr><td><strong>Date of Birth:</strong></td><td>{{ patientProfile.date_of_birth }}</td></tr>
+  </table>
+
+  <div class="action-row" *ngIf="!editMode && patientProfile">
+    <button class="btn-edit" (click)="startEdit()">Edit Profile</button>
+  </div>
+
+  <!-- Edit Mode -->
+  <div class="edit-form" *ngIf="editMode">
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" [(ngModel)]="editForm.full_name" name="full_name">
+    </div>
+    <div class="form-group">
+      <label>Contact Number</label>
+      <input type="text" [(ngModel)]="editForm.contact_number" name="contact_number">
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" [(ngModel)]="editForm.email_address" name="email_address">
+    </div>
+    <div class="form-group">
+      <label>Date of Birth</label>
+      <input type="date" [(ngModel)]="editForm.date_of_birth" name="date_of_birth">
+    </div>
+    <div class="action-row">
+      <button class="btn-save" (click)="saveEdit()">Save</button>
+      <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </div>
+</div>

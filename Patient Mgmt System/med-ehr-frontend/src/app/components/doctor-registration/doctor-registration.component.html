@@ -1,0 +1,28 @@
+<div class="portal-container">
+    <h3 class="centered-subtitle">Doctor Registration</h3>
+
+    <form (ngSubmit)="registerDoctor()" class="registration-form">
+        <table class="styled-table">
+            <tr>
+                <td><label>Doctor ID:</label></td>
+                <td><input type="text" [(ngModel)]="newDoctor.doctor_id" name="doctor_id" placeholder="e.g., D-001" required></td>
+            </tr>
+            <tr>
+                <td><label>Doctor Name:</label></td>
+                <td><input type="text" [(ngModel)]="newDoctor.doctor_name" name="doctor_name" placeholder="Dr. Smith" required></td>
+            </tr>
+            <tr>
+                <td><label>Specialization:</label></td>
+                <td><input type="text" [(ngModel)]="newDoctor.specialization" name="specialization" placeholder="Cardiology" required></td>
+            </tr>
+        </table>
+        <button type="submit" class="btn-submit">Register Doctor</button>
+    </form>
+
+    <h3 class="section-heading">Registered Doctors List</h3>
+    <ul class="doctor-list">
+        <li *ngFor="let d of doctors">
+            <strong>Dr. {{ d.doctor_name }}</strong> (ID: {{ d.doctor_id }}) - {{ d.specialization }}
+        </li>
+    </ul>
+</div>

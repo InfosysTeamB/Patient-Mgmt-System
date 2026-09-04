@@ -1,0 +1,76 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ApiService {
+  private baseUrl = 'http://127.0.0.1:8000/api';
+
+  constructor(private http: HttpClient) { }
+
+  // Auth methods
+  login(credentials: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/login/`, credentials);
+  }
+
+  registerUser(userData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/register/`, userData);
+  }
+
+  // Patient methods
+  getPatients(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/patients/`);
+  }
+
+  registerPatient(patientData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/patients/`, patientData);
+  }
+
+  updatePatient(patientId: string, patientData: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/patients/${patientId}/`, patientData);
+  }
+
+  deletePatient(patientId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/patients/${patientId}/`);
+  }
+
+  // Doctor methods
+  getDoctors(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/doctors/`);
+  }
+
+  registerDoctor(doctorData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/doctors/`, doctorData);
+  }
+
+  updateDoctor(doctorId: string, doctorData: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/doctors/${doctorId}/`, doctorData);
+  }
+
+  deleteDoctor(doctorId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/doctors/${doctorId}/`);
+  }
+
+  // Slot methods
+  getSlots(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/slots/`);
+  }
+
+  createSlot(slotData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/slots/`, slotData);
+  }
+
+  updateSlot(slotId: string, slotData: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/slots/${slotId}/`, slotData);
+  }
+
+  deleteSlot(slotId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/slots/${slotId}/`);
+  }
+
+  bookSlot(slotId: string, bookingData: any): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/slots/${slotId}/`, bookingData);
+  }
+}

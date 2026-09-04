@@ -1,0 +1,42 @@
+<div class="portal-container">
+    <h2 class="centered-title">Med-EHR Portal: Patient Records & Scheduling</h2>
+
+    <h3 class="centered-subtitle">Patient Registration</h3>
+
+    <form (ngSubmit)="registerPatient()" class="registration-form">
+        <table class="styled-table">
+            <tr>
+                <td><label>Patient ID:</label></td>
+                <td><input type="text" [(ngModel)]="newPatient.patient_id" name="patient_id" placeholder="e.g., P-001"
+                        required></td>
+            </tr>
+            <tr>
+                <td><label>Full Name:</label></td>
+                <td><input type="text" [(ngModel)]="newPatient.full_name" name="full_name" placeholder="John Doe"
+                        required></td>
+            </tr>
+            <tr>
+                <td><label>Contact Number:</label></td>
+                <td><input type="text" [(ngModel)]="newPatient.contact_number" name="contact_number"
+                        placeholder="123-456-7230" required></td>
+            </tr>
+            <tr>
+                <td><label>Email Address:</label></td>
+                <td><input type="email" [(ngModel)]="newPatient.email_address" name="email_address"
+                        placeholder="johndoe@gmail.com" required></td>
+            </tr>
+            <tr>
+                <td><label>Date of Birth:</label></td>
+                <td><input type="date" [(ngModel)]="newPatient.date_of_birth" name="date_of_birth" required></td>
+            </tr>
+        </table>
+        <button type="submit" class="btn-submit">Register Patient</button>
+    </form>
+
+    <h3 class="section-heading">Registered Patients List</h3>
+    <ul class="patient-list">
+        <li *ngFor="let p of patients">
+            <strong>{{ p.full_name }}</strong> (ID: {{ p.patient_id }}) - {{ p.contact_number }} - {{ p.email_address }}
+        </li>
+    </ul>
+</div>

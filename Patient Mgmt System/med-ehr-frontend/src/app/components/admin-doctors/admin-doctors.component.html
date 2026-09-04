@@ -1,0 +1,61 @@
+<div class="section-card">
+  <h3>Doctors Management</h3>
+
+  <div class="success-msg" *ngIf="msg">{{ msg }}</div>
+
+  <!-- Registration Form -->
+  <div class="form-panel">
+    <h4>Register New Doctor</h4>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Doctor ID</label>
+        <input type="text" [(ngModel)]="newDoctor.doctor_id" placeholder="e.g., D-100">
+      </div>
+      <div class="form-group">
+        <label>Doctor Name</label>
+        <input type="text" [(ngModel)]="newDoctor.doctor_name" placeholder="Jane Wilson">
+      </div>
+      <div class="form-group">
+        <label>Specialization</label>
+        <input type="text" [(ngModel)]="newDoctor.specialization" placeholder="Cardiology">
+      </div>
+      <button class="btn-add" (click)="registerDoctor()">Add Doctor</button>
+    </div>
+  </div>
+
+  <!-- List -->
+  <input type="text" [(ngModel)]="searchTerm" class="search-input" placeholder="Search doctors...">
+  <div *ngIf="filteredDoctors.length === 0" class="empty-msg">No doctors found.</div>
+  <table *ngIf="filteredDoctors.length > 0" class="info-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Specialization</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let d of filteredDoctors">
+        <ng-container *ngIf="editingId === d.id; else viewRow">
+          <td><input type="text" [(ngModel)]="editForm.doctor_id"></td>
+          <td><input type="text" [(ngModel)]="editForm.doctor_name"></td>
+          <td><input type="text" [(ngModel)]="editForm.specialization"></td>
+          <td>
+            <button class="btn-save-sm" (click)="saveEdit()">Save</button>
+            <button class="btn-cancel-sm" (click)="editingId = null">Cancel</button>
+          </td>
+        </ng-container>
+        <ng-template #viewRow>
+          <td>{{ d.doctor_id }}</td>
+          <td>Dr. {{ d.doctor_name }}</td>
+          <td>{{ d.specialization }}</td>
+          <td>
+            <button class="btn-edit-sm" (click)="startEdit(d)">Edit</button>
+            <button class="btn-delete-sm" (click)="deleteDoctor(d)">Delete</button>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+</div>

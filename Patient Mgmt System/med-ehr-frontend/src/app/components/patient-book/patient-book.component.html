@@ -1,0 +1,41 @@
+<div class="section-card">
+  <h3>Book an Appointment</h3>
+
+  <div class="date-filter">
+    <label>Filter by Date:</label>
+    <input type="date" [(ngModel)]="selectedDate">
+  </div>
+
+  <table class="grid-table">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th *ngFor="let day of weekDays">{{ day }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of timeSlots">
+        <td>{{ t.label }}</td>
+        <td *ngFor="let day of weekDays">
+          <ng-container *ngIf="getSlotForTimeAndDay(t.start, day) as slot; else noSlot">
+            <span [class]="'slot-badge ' + (slot.status | lowercase)">{{ slot.status }}</span>
+          </ng-container>
+          <ng-template #noSlot><span class="slot-badge unassigned">-</span></ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="booking-controls">
+    <div class="form-group">
+      <label>Select an Available Slot:</label>
+      <select [(ngModel)]="selectedSlotId" name="slotSelect">
+        <option [ngValue]="null" disabled>-- Select Slot --</option>
+        <option *ngFor="let s of slots" [value]="s.id" [disabled]="s.status === 'Booked' || s.patient_id">
+          {{ s.appointment_date }} | {{ s.day_of_week }} ({{ s.start_time }}) - {{ s.status }}
+        </option>
+      </select>
+    </div>
+    <button class="btn-book" (click)="bookAppointment()">Book Appointment</button>
+  </div>
+</div>

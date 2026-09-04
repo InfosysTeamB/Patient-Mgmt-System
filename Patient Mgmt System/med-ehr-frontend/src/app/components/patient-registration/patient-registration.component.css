@@ -1,0 +1,88 @@
+.portal-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.centered-title {
+    color: #2c3e50;
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.centered-subtitle {
+    color: #34495e;
+    text-align: center;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+}
+
+.section-heading {
+    color: #34495e;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 8px;
+    margin-top: 30px;
+}
+
+.styled-table {
+    width: 100%;
+    margin-bottom: 15px;
+    border-spacing: 0 10px;
+}
+
+.styled-table td {
+    padding: 8px;
+    vertical-align: middle;
+}
+
+.styled-table td label {
+    font-weight: bold;
+    color: #555;
+}
+
+.styled-table input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.btn-submit {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s ease;
+}
+
+.btn-submit:hover {
+    background-color: #219653;
+}
+
+.patient-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.patient-list li {
+    background: #f9f9f9;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-left: 4px solid #3498db;
+    border-radius: 4px;
+    font-size: 14px;
+}

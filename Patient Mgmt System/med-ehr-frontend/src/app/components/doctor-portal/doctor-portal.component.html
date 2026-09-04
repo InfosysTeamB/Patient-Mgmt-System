@@ -1,0 +1,35 @@
+<div class="portal-wrapper">
+  <header class="top-nav">
+    <div class="nav-left">
+      <span class="nav-brand">Med-EHR</span>
+      <span class="nav-divider"></span>
+      <span class="nav-role">Doctor Portal</span>
+    </div>
+    <div class="nav-right">
+      <div class="user-chip">
+        <span class="user-avatar">{{ (user?.name || 'D')?.charAt(0) }}</span>
+        <span class="user-name">{{ user?.name || 'Doctor' }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="portal-body">
+    <aside class="sidebar">
+      <span class="sidebar-label">Menu</span>
+      <a routerLink="/doctor/profile" routerLinkActive="active" class="sidebar-link">
+        <span class="link-icon">&#128100;</span> My Profile
+      </a>
+      <a routerLink="/doctor/schedule" routerLinkActive="active" class="sidebar-link">
+        <span class="link-icon">&#128197;</span> My Schedule
+      </a>
+      <a routerLink="/doctor/appointments" routerLinkActive="active" class="sidebar-link">
+        <span class="link-icon">&#128221;</span> My Appointments
+      </a>
+    </aside>
+
+    <main class="portal-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+===============================================
+  Med-EHR Patient Management System
+  Team Setup Guide
+===============================================
+
+PREREQUISITES:
+  - Python 3.13 or higher
+  - Node.js 16+ and npm
+  - Git
+
+-----------------------------------------------
+STEP 1: Clone the repository
+-----------------------------------------------
+
+  git clone <repo-url>
+  cd "Patient Mgmt System"
+
+-----------------------------------------------
+STEP 2: Backend Setup
+-----------------------------------------------
+
+  cd med_ehr_backend
+
+  # Create virtual environment
+  python -m venv venv
+
+  # Activate virtual environment
+  venv\Scripts\activate              (Windows)
+  source venv/bin/activate           (Mac/Linux)
+
+  # Install dependencies
+  pip install -r ../requirements.txt
+
+  # Run the server
+  python manage.py runserver
+
+  Backend will run at: http://127.0.0.1:8000
+
+-----------------------------------------------
+STEP 3: Frontend Setup (new terminal)
+-----------------------------------------------
+
+  cd med-ehr-frontend
+
+  # Install dependencies
+  npm install
+
+  # Run the app
+  npm start
+
+  Frontend will run at: http://localhost:4200
+
+-----------------------------------------------
+STEP 4: Firebase
+-----------------------------------------------
+
+  The serviceAccountKey.json is already included
+  in the repo. No extra setup needed. Just make
+  sure the backend is running and it will connect
+  to Firebase automatically.
+
+-----------------------------------------------
+API ENDPOINTS
+-----------------------------------------------
+
+  GET/POST       /api/patients/
+  GET/PUT/DELETE  /api/patients/{id}/
+
+  GET/POST       /api/doctors/
+  GET/PUT/DELETE  /api/doctors/{id}/
+
+  GET/POST       /api/slots/
+  GET/PUT/DELETE  /api/slots/{id}/
+
+-----------------------------------------------
+TROUBLESHOOTING
+-----------------------------------------------
+
+  1. If "pip install" fails, make sure your
+     virtual environment is activated.
+
+  2. If port 8000 is already in use:
+     python manage.py runserver 8080
+
+  3. If port 4200 is already in use:
+     ng serve --port 4201
+
+  4. If Firebase connection fails, check that
+     serviceAccountKey.json exists in
+     med_ehr_backend/ folder.
+
+===============================================

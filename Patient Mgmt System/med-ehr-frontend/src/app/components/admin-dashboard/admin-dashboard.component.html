@@ -1,0 +1,35 @@
+<div class="dashboard-wrapper">
+  <header class="top-nav">
+    <div class="nav-left">
+      <span class="nav-brand">Med-EHR</span>
+      <span class="nav-divider"></span>
+      <span class="nav-role">Admin Console</span>
+    </div>
+    <div class="nav-right">
+      <div class="user-chip">
+        <span class="user-avatar">{{ (user?.name || 'A')?.charAt(0) }}</span>
+        <span class="user-name">{{ user?.name || 'Admin' }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="dashboard-body">
+    <aside class="sidebar">
+      <span class="sidebar-label">Management</span>
+      <a routerLink="/admin/patients" routerLinkActive="active" class="sidebar-link">
+        <span class="link-icon">&#128100;</span> Patients
+      </a>
+      <a routerLink="/admin/doctors" routerLinkActive="active" class="sidebar-link">
+        <span class="link-icon">&#128138;</span> Doctors
+      </a>
+      <a routerLink="/admin/appointments" routerLinkActive="active" class="sidebar-link">
+        <span class="link-icon">&#128197;</span> Appointments
+      </a>
+    </aside>
+
+    <main class="dashboard-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

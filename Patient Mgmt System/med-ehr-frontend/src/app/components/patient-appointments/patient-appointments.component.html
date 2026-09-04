@@ -1,0 +1,26 @@
+<div class="section-card">
+  <h3>My Appointments</h3>
+  <div *ngIf="myBookings.length === 0" class="empty-msg">No upcoming appointments.</div>
+  <table *ngIf="myBookings.length > 0" class="info-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Day</th>
+        <th>Time</th>
+        <th>Doctor</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let b of myBookings">
+        <td>{{ b.appointment_date }}</td>
+        <td>{{ b.day_of_week }}</td>
+        <td>{{ b.start_time }} - {{ b.end_time }}</td>
+        <td>{{ getDoctorName(b.doctor_id) }}</td>
+        <td><span class="status-badge booked">{{ b.status }}</span></td>
+        <td><button class="btn-cancel" (click)="cancelBooking(b.id)">Cancel</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,106 @@
+<div class="section-card">
+  <h3>Appointments & Slots Management</h3>
+
+  <div class="success-msg" *ngIf="msg">{{ msg }}</div>
+
+  <!-- Create New Slot -->
+  <div class="form-panel">
+    <h4>Create New Slot</h4>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Doctor</label>
+        <select [(ngModel)]="newSlot.doctor_id">
+          <option value="" disabled>Select Doctor</option>
+          <option *ngFor="let d of doctors" [value]="d.doctor_id">Dr. {{ d.doctor_name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" [(ngModel)]="newSlot.appointment_date">
+      </div>
+      <div class="form-group">
+        <label>Day</label>
+        <select [(ngModel)]="newSlot.day_of_week">
+          <option value="" disabled>Select</option>
+          <option *ngFor="let day of weekDays" [value]="day">{{ day }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Start</label>
+        <select [(ngModel)]="newSlot.start_time">
+          <option value="" disabled>Select</option>
+          <option *ngFor="let t of timeOptions" [value]="t.start">{{ t.label }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>End</label>
+        <select [(ngModel)]="newSlot.end_time">
+          <option value="" disabled>Select</option>
+          <option *ngFor="let t of timeOptions" [value]="t.end">{{ t.label }}</option>
+        </select>
+      </div>
+      <button class="btn-add" (click)="createSlot()">Add Slot</button>
+    </div>
+  </div>
+
+  <!-- Slot List -->
+  <div *ngIf="sortedSlots.length === 0" class="empty-msg">No slots created yet.</div>
+  <table *ngIf="sortedSlots.length > 0" class="info-table">
+    <thead>
+      <tr>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Day</th>
+        <th>Time</th>
+        <th>Patient</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of sortedSlots">
+        <ng-container *ngIf="editingId === s.id; else viewRow">
+          <td>
+            <select [(ngModel)]="editForm.doctor_id">
+              <option *ngFor="let d of doctors" [value]="d.doctor_id">Dr. {{ d.doctor_name }}</option>
+            </select>
+          </td>
+          <td><input type="date" [(ngModel)]="editForm.appointment_date"></td>
+          <td>
+            <select [(ngModel)]="editForm.day_of_week">
+              <option *ngFor="let day of weekDays" [value]="day">{{ day }}</option>
+            </select>
+          </td>
+          <td>
+            <select [(ngModel)]="editForm.start_time">
+              <option *ngFor="let t of timeOptions" [value]="t.start">{{ t.label }}</option>
+            </select>
+          </td>
+          <td><input type="text" [(ngModel)]="editForm.end_time"></td>
+          <td>
+            <select [(ngModel)]="editForm.status">
+              <option value="Available">Available</option>
+              <option value="Booked">Booked</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn-save-sm" (click)="saveEdit()">Save</button>
+            <button class="btn-cancel-sm" (click)="editingId = null">Cancel</button>
+          </td>
+        </ng-container>
+        <ng-template #viewRow>
+          <td>{{ getDoctorName(s.doctor_id) }}</td>
+          <td>{{ s.appointment_date }}</td>
+          <td>{{ s.day_of_week }}</td>
+          <td>{{ s.start_time }} - {{ s.end_time }}</td>
+          <td>{{ getPatientName(s.patient_id) }}</td>
+          <td><span [class]="'status-badge ' + (s.status | lowercase)">{{ s.status }}</span></td>
+          <td>
+            <button class="btn-edit-sm" (click)="startEdit(s)">Edit</button>
+            <button class="btn-delete-sm" (click)="deleteSlot(s)">Delete</button>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+</div>

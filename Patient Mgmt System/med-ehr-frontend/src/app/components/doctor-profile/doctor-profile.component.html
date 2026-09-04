@@ -1,0 +1,32 @@
+<div class="section-card">
+  <h3>My Profile</h3>
+
+  <div class="success-msg" *ngIf="msg">{{ msg }}</div>
+
+  <!-- View Mode -->
+  <table class="info-table" *ngIf="!editMode && doctorProfile">
+    <tr><td><strong>Name:</strong></td><td>Dr. {{ doctorProfile.doctor_name }}</td></tr>
+    <tr><td><strong>Doctor ID:</strong></td><td>{{ doctorProfile.doctor_id }}</td></tr>
+    <tr><td><strong>Specialization:</strong></td><td>{{ doctorProfile.specialization }}</td></tr>
+  </table>
+
+  <div class="action-row" *ngIf="!editMode && doctorProfile">
+    <button class="btn-edit" (click)="startEdit()">Edit Profile</button>
+  </div>
+
+  <!-- Edit Mode -->
+  <div class="edit-form" *ngIf="editMode">
+    <div class="form-group">
+      <label>Doctor Name</label>
+      <input type="text" [(ngModel)]="editForm.doctor_name" name="doctor_name">
+    </div>
+    <div class="form-group">
+      <label>Specialization</label>
+      <input type="text" [(ngModel)]="editForm.specialization" name="specialization">
+    </div>
+    <div class="action-row">
+      <button class="btn-save" (click)="saveEdit()">Save</button>
+      <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </div>
+</div>

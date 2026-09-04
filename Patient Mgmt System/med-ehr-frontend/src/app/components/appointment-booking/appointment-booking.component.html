@@ -1,0 +1,111 @@
+<div class="portal-container">
+    <h3 class="centered-subtitle">Appointment Slot Management</h3>
+
+    <!-- Date Selection Filter -->
+    <div class="date-filter-group">
+        <label><strong>Select Appointment Date:</strong></label>
+        <input type="date" [(ngModel)]="selectedDate" class="date-input">
+    </div>
+
+    <!-- Weekly Grid Table -->
+    <table class="grid-table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th *ngFor="let day of weekDays">{{ day }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let t of timeSlots">
+                <td>{{ t.label }}</td>
+                <td *ngFor="let day of weekDays">
+                    <ng-container *ngIf="getSlotForTimeAndDay(t.start, day) as slot; else noSlot">
+                        <span [class]="'slot-badge ' + (slot.status | lowercase)">
+                            {{ slot.status }}
+                        </span>
+                    </ng-container>
+                    <ng-template #noSlot>
+                        <span class="slot-badge unassigned">Not Created</span>
+                    </ng-template>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Create New Slot -->
+    <h3 class="section-heading">Create New Appointment Slot</h3>
+    <div class="booking-controls">
+        <div class="form-group">
+            <label>Doctor:</label>
+            <select [(ngModel)]="newSlot.doctor_id" name="newSlotDoctor">
+                <option value="" disabled>-- Select Doctor --</option>
+                <option *ngFor="let d of doctors" [value]="d.doctor_id">
+                    Dr. {{ d.doctor_name }} ({{ d.specialization }})
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Appointment Date:</label>
+            <input type="date" [(ngModel)]="newSlot.appointment_date" name="newSlotDate">
+        </div>
+        <div class="form-group">
+            <label>Day of Week:</label>
+            <select [(ngModel)]="newSlot.day_of_week" name="newSlotDay">
+                <option value="" disabled>-- Select Day --</option>
+                <option *ngFor="let day of weekDays" [value]="day">{{ day }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Start Time:</label>
+            <select [(ngModel)]="newSlot.start_time" name="newSlotStart">
+                <option value="" disabled>-- Select Start Time --</option>
+                <option *ngFor="let t of timeSlots" [value]="t.start">{{ t.label }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>End Time:</label>
+            <select [(ngModel)]="newSlot.end_time" name="newSlotEnd">
+                <option value="" disabled>-- Select End Time --</option>
+                <option *ngFor="let t of timeSlots" [value]="t.end">{{ t.label }}</option>
+            </select>
+        </div>
+        <button class="btn-create" (click)="createSlot()">Create Slot</button>
+    </div>
+
+    <!-- Booking Action Form Controls -->
+    <div class="booking-controls">
+
+        <div class="form-group">
+            <label>Select Patient ID:</label>
+            <select [(ngModel)]="selectedPatientId" name="patientSelect">
+                <option value="" disabled>-- Select Patient --</option>
+                <option *ngFor="let p of patients" [value]="p.patient_id">
+                    {{ p.full_name }} (ID: {{ p.patient_id }})
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Doctor ID:</label>
+            <select [(ngModel)]="selectedDoctorId" name="doctorSelect">
+                <option value="" disabled>-- Select Doctor --</option>
+                <option *ngFor="let d of doctors" [value]="d.doctor_id">
+                    Dr. {{ d.doctor_name }} ({{ d.specialization }})
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Available Slot:</label>
+            <select [(ngModel)]="selectedSlotId" name="slotSelect">
+                <option [ngValue]="null" disabled>-- Select Available Slot --</option>
+                <option *ngFor="let s of slots" [value]="s.id" [disabled]="s.status === 'Booked'">
+                    {{ s.appointment_date }} | {{ s.day_of_week }} ({{ s.start_time }}) - {{ s.status }}
+                </option>
+            </select>
+        </div>
+
+        <button class="btn-submit" (click)="bookAppointment()">Confirm & Book Appointment</button>
+
+    </div>
+</div>

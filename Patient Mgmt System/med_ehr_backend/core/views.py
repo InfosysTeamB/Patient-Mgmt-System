@@ -2,6 +2,7 @@ import datetime
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from google.cloud.firestore_v1.base_query import FieldFilter
 from firebase_config import db
 from .serializers import PatientRecordSerializer, DoctorProfileSerializer, AppointmentSlotSerializer
 
@@ -215,7 +216,7 @@ def login_view(request):
     if not email or not password:
         return Response({"error": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    docs = db.collection(USERS_COL).where('email', '==', email).stream()
+    docs = db.collection(USERS_COL).where(filter=FieldFilter('email', '==', email)).stream()
     for doc in docs:
         user = doc.to_dict()
         if user.get('password') == password:
@@ -244,7 +245,7 @@ def register_view(request):
     if role not in ('admin', 'patient', 'doctor'):
         return Response({"error": "Role must be admin, patient, or doctor"}, status=status.HTTP_400_BAD_REQUEST)
 
-    existing = db.collection(USERS_COL).where('email', '==', email).stream()
+    existing = db.collection(USERS_COL).where(filter=FieldFilter('email', '==', email)).stream()
     for _ in existing:
         return Response({"error": "Email already registered"}, status=status.HTTP_400_BAD_REQUEST)
 

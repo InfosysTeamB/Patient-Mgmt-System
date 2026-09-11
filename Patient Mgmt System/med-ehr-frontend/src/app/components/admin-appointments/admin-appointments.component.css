@@ -1,1 +1,8 @@
-/* Styles provided globally in src/styles.css */
+.filter-panel {
+  padding: 16px 20px;
+  margin-bottom: 18px;
+}
+
+.filter-panel h4 {
+  margin: 0 0 12px;
+}

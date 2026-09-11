@@ -7,6 +7,12 @@
     <div class="date-filter">
       <label>Filter by Date:</label>
       <input type="date" [(ngModel)]="selectedDate">
+      <label>Doctor:</label>
+      <select [(ngModel)]="selectedDoctor">
+        <option value="">All Doctors</option>
+        <option *ngFor="let d of doctors" [value]="d.doctor_id">Dr. {{ d.doctor_name }}</option>
+      </select>
+      <button class="btn-clear-filter" (click)="clearFilters()">Clear</button>
     </div>
 
     <table class="grid-table">
@@ -21,10 +27,10 @@
           <td>{{ t.label }}</td>
           <td *ngFor="let day of weekDays">
             <ng-container *ngIf="getSlotForTimeAndDay(t.start, day) as slot; else noSlot">
-              <div class="slot-cell">
+              <button class="slot-cell bookable" [class.disabled]="slot.status !== 'Available'" [disabled]="slot.status !== 'Available'" (click)="bookAppointment(slot)">
                 <span [class]="'slot-badge ' + (slot.status | lowercase)">{{ slot.status }}</span>
                 <span class="slot-doctor" *ngIf="slot.doctor_id">{{ getDoctorName(slot.doctor_id) }}</span>
-              </div>
+              </button>
             </ng-container>
             <ng-template #noSlot><span class="slot-badge unassigned">-</span></ng-template>
           </td>
@@ -32,17 +38,6 @@
       </tbody>
     </table>
 
-    <div class="booking-controls">
-      <div class="form-group">
-        <label>Select an Available Slot:</label>
-        <select [(ngModel)]="selectedSlotId" name="slotSelect">
-          <option [ngValue]="null" disabled>-- Select Slot --</option>
-          <option *ngFor="let s of getAvailableSlots()" [value]="s.id">
-            {{ s.appointment_date }} | {{ s.day_of_week }} ({{ s.start_time }}) | {{ getDoctorName(s.doctor_id) }}
-          </option>
-        </select>
-      </div>
-      <button class="btn-book" (click)="bookAppointment()">Book Appointment</button>
-    </div>
+    <div class="booking-hint">Click an <span class="status-badge available">Available</span> slot above to book it.</div>
   </ng-container>
 </div>

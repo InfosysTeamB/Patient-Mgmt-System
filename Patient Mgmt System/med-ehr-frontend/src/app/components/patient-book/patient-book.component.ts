@@ -14,7 +14,7 @@ export class PatientBookComponent implements OnInit {
   doctors: any[] = [];
   loading = true;
   selectedDate: string = '';
-  selectedSlotId: string | null = null;
+  selectedDoctor: string = '';
 
   timeSlots = [
     { start: '09:00:00', end: '10:00:00', label: '09:00 AM - 10:00 AM' },
@@ -54,25 +54,21 @@ export class PatientBookComponent implements OnInit {
     return (t || '').slice(0, 5);
   }
 
-  getAvailableSlots(): any[] {
-    const today = new Date().toISOString().slice(0, 10);
-    return this.slots.filter(s =>
-      s.status === 'Available' && !s.patient_id &&
-      (!s.appointment_date || s.appointment_date >= today)
-    );
-  }
-
   getSlotForTimeAndDay(time: string, day: string) {
     return this.slots.find(s =>
       this.normalizeTime(s.start_time) === this.normalizeTime(time) && s.day_of_week === day &&
-      (!this.selectedDate || s.appointment_date === this.selectedDate)
+      (!this.selectedDate || s.appointment_date === this.selectedDate) &&
+      (!this.selectedDoctor || s.doctor_id === this.selectedDoctor)
     );
   }
 
-  async bookAppointment() {
-    if (!this.selectedSlotId) { this.toast.info('Please select a slot to book.'); return; }
-    const slot = this.slots.find(s => s.id === this.selectedSlotId);
-    if (!slot) { this.toast.error('Slot not found.'); return; }
+  clearFilters() {
+    this.selectedDate = '';
+    this.selectedDoctor = '';
+  }
+
+  async bookAppointment(slot: any) {
+    if (!slot) return;
 
     const confirmed = await this.confirm.confirm({
       title: 'Confirm Booking',
@@ -90,11 +86,10 @@ export class PatientBookComponent implements OnInit {
       status: 'Booked'
     };
 
-    this.apiService.bookSlot(this.selectedSlotId, payload).subscribe({
+    this.apiService.bookSlot(slot.id, payload).subscribe({
       next: () => {
         this.toast.success('Appointment booked successfully!');
         this.loadSlots();
-        this.selectedSlotId = null;
       },
       error: () => this.toast.error('Failed to book appointment.')
     });

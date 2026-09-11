@@ -12,6 +12,7 @@ import { ConfirmService } from '../../services/confirm.service';
 export class DoctorScheduleComponent implements OnInit {
   mySlots: any[] = [];
   loading = true;
+  selectedDate: string = '';
 
   timeSlots = [
     { start: '09:00:00', end: '10:00:00', label: '09:00 AM - 10:00 AM' },
@@ -51,7 +52,14 @@ export class DoctorScheduleComponent implements OnInit {
 
   getSlotForTimeAndDay(time: string, day: string) {
     const t = (time || '').slice(0, 5);
-    return this.mySlots.find(s => (s.start_time || '').slice(0, 5) === t && s.day_of_week === day);
+    return this.mySlots.find(s =>
+      (s.start_time || '').slice(0, 5) === t && s.day_of_week === day &&
+      (!this.selectedDate || s.appointment_date === this.selectedDate)
+    );
+  }
+
+  clearFilters() {
+    this.selectedDate = '';
   }
 
   getPatientName(slot: any): string {

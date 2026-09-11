@@ -37,6 +37,11 @@
   <!-- Schedule Grid -->
   <app-loading-spinner *ngIf="loading" label="Loading your schedule..."></app-loading-spinner>
   <ng-container *ngIf="!loading">
+    <div class="date-filter">
+      <label>Filter by Date:</label>
+      <input type="date" [(ngModel)]="selectedDate">
+      <button class="btn-clear-filter" (click)="clearFilters()">Clear</button>
+    </div>
     <div *ngIf="mySlots.length === 0" class="empty-msg">
       You haven't added any availability yet.
       <div class="empty-cta">Use the form above to add your first time slot.</div>

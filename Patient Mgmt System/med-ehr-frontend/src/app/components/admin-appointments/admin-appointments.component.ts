@@ -31,6 +31,10 @@ export class AdminAppointmentsComponent implements OnInit {
     end_time: ''
   };
 
+  filterDoctor = '';
+  filterDate = '';
+  filterStatus = '';
+
   editingId: string | null = null;
   editForm = {
     doctor_id: '', appointment_date: '', day_of_week: '', start_time: '', end_time: '', status: ''
@@ -77,12 +81,24 @@ export class AdminAppointmentsComponent implements OnInit {
   }
 
   get sortedSlots(): any[] {
-    return [...this.slots].sort((a, b) => {
-      const da = a.appointment_date || '';
-      const db = b.appointment_date || '';
-      if (da !== db) return da.localeCompare(db);
-      return (a.start_time || '').localeCompare(b.start_time || '');
-    });
+    return [...this.slots]
+      .filter(s =>
+        (!this.filterDoctor || s.doctor_id === this.filterDoctor) &&
+        (!this.filterDate || s.appointment_date === this.filterDate) &&
+        (!this.filterStatus || s.status === this.filterStatus)
+      )
+      .sort((a, b) => {
+        const da = a.appointment_date || '';
+        const db = b.appointment_date || '';
+        if (da !== db) return da.localeCompare(db);
+        return (a.start_time || '').localeCompare(b.start_time || '');
+      });
+  }
+
+  clearFilters() {
+    this.filterDoctor = '';
+    this.filterDate = '';
+    this.filterStatus = '';
   }
 
   createSlot() {

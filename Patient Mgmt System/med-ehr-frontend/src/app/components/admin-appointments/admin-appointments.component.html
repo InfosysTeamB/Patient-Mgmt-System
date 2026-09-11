@@ -41,11 +41,39 @@
     </div>
   </div>
 
+  <!-- Filter Bar -->
+  <div class="form-panel filter-panel">
+    <h4>Filter Appointments</h4>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Doctor</label>
+        <select [(ngModel)]="filterDoctor">
+          <option value="">All Doctors</option>
+          <option *ngFor="let d of doctors" [value]="d.doctor_id">Dr. {{ d.doctor_name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" [(ngModel)]="filterDate">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select [(ngModel)]="filterStatus">
+          <option value="">All Statuses</option>
+          <option value="Available">Available</option>
+          <option value="Booked">Booked</option>
+        </select>
+      </div>
+      <button class="btn-clear-filter" (click)="clearFilters()">Clear Filters</button>
+    </div>
+  </div>
+
   <!-- Slot List -->
   <app-loading-spinner *ngIf="loading" label="Loading slots..."></app-loading-spinner>
   <div *ngIf="!loading && sortedSlots.length === 0" class="empty-msg">
-    No slots created yet.
-    <div class="empty-cta">Use the form above to create your first appointment slot.</div>
+    No slots matched your filters.
+    <div class="empty-cta" *ngIf="filterDoctor || filterDate || filterStatus">Adjust the filters above or clear them to see all slots.</div>
+    <div class="empty-cta" *ngIf="!filterDoctor && !filterDate && !filterStatus">Use the form above to create your first appointment slot.</div>
   </div>
   <table *ngIf="!loading && sortedSlots.length > 0" class="info-table">
     <thead>

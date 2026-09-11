@@ -9,14 +9,24 @@ class PatientRecord:
     contact_number: str
     email_address: str     # unique
     date_of_birth: str     # ISO format "YYYY-MM-DD"
+    gender: str = ''               # "Male", "Female", or "Other"
+    blood_group: str = ''          # e.g., "A+", "O-", or "Unknown"
+    address: str = ''              # Home address
+    emergency_contact_name: str = ''    # Emergency contact's name
+    emergency_contact_number: str = ''  # Emergency contact's phone
 
 
 @dataclass
 class DoctorProfile:
-    """Stores doctor information for appointment scheduling."""
+    """Stores doctor information for appointment scheduling.
+
+    Self-registered doctors start as "pending" and must be approved by an
+    admin before they can log in ("approved"). Rejected doctors are blocked.
+    """
     doctor_id: str         # e.g., "12345", used as Firestore document ID
     doctor_name: str
     specialization: str
+    status: str = "approved"  # "pending", "approved", or "rejected"
 
 
 @dataclass

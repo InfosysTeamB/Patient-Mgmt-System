@@ -15,7 +15,12 @@ export class PatientRegistrationComponent implements OnInit {
     full_name: '',
     contact_number: '',
     email_address: '',
-    date_of_birth: ''
+    date_of_birth: '',
+    gender: '',
+    blood_group: '',
+    address: '',
+    emergency_contact_name: '',
+    emergency_contact_number: ''
   };
 
   constructor(private apiService: ApiService) {}
@@ -35,7 +40,7 @@ export class PatientRegistrationComponent implements OnInit {
     next: (response) => {
       alert('Patient registered successfully!');
       this.loadPatients();
-      this.newPatient = { patient_id: '', full_name: '', contact_number: '', email_address: '', date_of_birth: '' };
+      this.newPatient = { patient_id: '', full_name: '', contact_number: '', email_address: '', date_of_birth: '', gender: '', blood_group: '', address: '', emergency_contact_name: '', emergency_contact_number: '' };
     },
     error: (err) => {
       console.error('Full error details:', err);

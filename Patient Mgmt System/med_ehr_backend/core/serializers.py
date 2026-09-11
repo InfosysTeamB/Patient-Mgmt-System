@@ -7,6 +7,11 @@ class PatientRecordSerializer(serializers.Serializer):
     contact_number = serializers.CharField(max_length=15)
     email_address = serializers.EmailField()
     date_of_birth = serializers.DateField()
+    gender = serializers.CharField(max_length=20, required=False, allow_blank=True, default='')
+    blood_group = serializers.CharField(max_length=10, required=False, allow_blank=True, default='')
+    address = serializers.CharField(max_length=250, required=False, allow_blank=True, default='')
+    emergency_contact_name = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
+    emergency_contact_number = serializers.CharField(max_length=15, required=False, allow_blank=True, default='')
 
 
 class DoctorProfileSerializer(serializers.Serializer):

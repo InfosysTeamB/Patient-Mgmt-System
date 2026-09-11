@@ -34,7 +34,7 @@ A full-stack web application providing a unified portal for **patients**, **doct
 ## Features
 
 - **Role-Based Access Control** - Three distinct portals (Admin, Patient, Doctor) with route guards and separate navigation
-- **Patient Management** - Full CRUD operations for patient records (create, read, update, delete)
+- **Patient Management** - Full CRUD operations for patient records (create, read, update, delete) including medical/demographic details (blood group, gender, address, emergency contact)
 - **Doctor Management** - Full CRUD operations for doctor profiles with specialization tracking
 - **Appointment Scheduling** - Create, book, view, complete, and cancel appointment slots
 - **Weekly Schedule Grid** - Visual weekly timetable showing slot availability across weekdays
@@ -42,6 +42,7 @@ A full-stack web application providing a unified portal for **patients**, **doct
 - **Prescriptions** - Doctors can prescribe medications linked to consultations
 - **Treatment History** - Patients and doctors can view chronological treatment history (consultations + prescriptions)
 - **Self-Registration** - Users can register accounts as patients or doctors; admins are pre-seeded
+- **Doctor Approval Workflow** - Self-registered doctors are marked "pending" and cannot log in until an admin approves or rejects them
 - **Search & Filter** - Client-side search across patients, doctors, and appointment records
 - **Profile Management** - Patients and doctors can view and edit their own profiles
 - **Availability Management** - Doctors can add and manage their available time slots
@@ -250,7 +251,9 @@ Pre-seeded in Firestore via `python manage.py seed_demo_data`:
 ### How Auth Works
 
 1. **Login** (`POST /api/auth/login/`): Accepts email/password, queries Firestore `users` collection, performs plaintext password comparison, generates an opaque token stored in the `tokens` collection, and returns user details (token, id, email, name, role, entity_id)
-2. **Registration** (`POST /api/auth/register/`): Creates a new user record in Firestore. For patient/doctor roles, auto-generates a unique `entity_id` (e.g., `P-20260904123456`) and creates a corresponding profile record. Returns a token immediately.
+2. **Registration** (`POST /api/auth/register/`): Creates a new user record in Firestore.
+   - **Patients**: auto-generates a unique `entity_id` (e.g., `P-20260904123456`), creates a profile record, and returns a token immediately (auto-login).
+   - **Doctors**: creates a profile with `status: "pending"` and does **not** issue a token. The doctor must wait for an admin to approve the account before they can log in.
 3. **Frontend Auth State**: The token and user object are persisted to `localStorage` via `AuthService`. An `AuthInterceptor` automatically attaches the `Authorization: Token <token>` header to all API requests.
 4. **Route Guards**: `AuthGuard` redirects unauthenticated users to the login page. `RoleGuard` restricts portal routes to the appropriate role (e.g., only admins can access `/admin/*`).
 5. **Logout** (`POST /api/auth/logout/`): Deletes the token from Firestore and clears `localStorage`.
@@ -273,6 +276,8 @@ The admin has full access to manage all entities in the system.
 
 **Capabilities:**
 - Register new patients and doctors with auto-generated IDs
+- Capture patient medical/demographic info (gender, blood group, address, emergency contact, DOB)
+- Review and approve/reject pending self-registered doctors
 - Create appointment slots linked to specific doctors
 - Inline editing of all records in data tables
 - Searchable tables with client-side filtering
@@ -295,7 +300,7 @@ Patients can manage their profile, book appointments, view treatment history, an
 | `/patient/prescriptions`       | View prescribed medications              |
 
 **Capabilities:**
-- View profile details (name, ID, contact, email, DOB)
+- View profile details (name, ID, gender, blood group, contact, email, DOB, address, emergency contact)
 - Edit profile information
 - Browse weekly schedule grid showing slot statuses
 - Book available appointment slots
@@ -320,6 +325,7 @@ Doctors manage their profile, availability schedule, consultations, prescription
 | `/doctor/prescriptions`     | Manage prescriptions (create, edit, delete) |
 
 **Capabilities:**
+- Self-register and wait for admin approval before first login
 - View profile details (name, ID, specialization)
 - Edit profile information
 - Add new availability slots (date, day, time range)
@@ -329,6 +335,8 @@ Doctors manage their profile, availability schedule, consultations, prescription
 - Complete consultations with diagnosis and notes (marks slot as Completed)
 - Create and manage prescriptions linked to consultations
 - Prescribe medications with name, dosage, frequency, duration, and notes
+
+> **Note:** Doctors who self-register receive `status: "pending"` and cannot log in until an admin approves their account. Doctor profiles created by an admin are approved immediately.
 
 **Theme:** Blue-themed top navigation (`#0284c7`), blue sidebar
 
@@ -359,14 +367,16 @@ All endpoints are prefixed with `/api/`.
 
 ### Doctors
 
-| Method | Endpoint              | Description         |
-|--------|-----------------------|---------------------|
-| GET    | `/api/doctors/`       | List all doctors    |
-| POST   | `/api/doctors/`       | Create a doctor     |
-| GET    | `/api/doctors/{id}/`  | Retrieve a doctor   |
-| PUT    | `/api/doctors/{id}/`  | Full update         |
-| PATCH  | `/api/doctors/{id}/`  | Partial update      |
-| DELETE | `/api/doctors/{id}/`  | Delete a doctor     |
+| Method | Endpoint               | Description              |
+|--------|------------------------|--------------------------|
+| GET    | `/api/doctors/`        | List all doctors (non-admins only see approved) |
+| POST   | `/api/doctors/`        | Create a doctor          |
+| GET    | `/api/doctors/{id}/`   | Retrieve a doctor        |
+| PUT    | `/api/doctors/{id}/`   | Full update              |
+| PATCH  | `/api/doctors/{id}/`   | Partial update           |
+| DELETE | `/api/doctors/{id}/`   | Delete a doctor          |
+| POST   | `/api/doctors/{id}/approve/` | Admin approves a pending doctor |
+| POST   | `/api/doctors/{id}/reject/`  | Admin rejects a pending doctor  |
 
 ### Appointment Slots
 
@@ -421,13 +431,18 @@ All endpoints are prefixed with `/api/`.
 
 ### `patients` Collection
 
-| Field            | Type   | Description                               |
-|------------------|--------|-------------------------------------------|
-| `patient_id`     | string | Document ID (e.g., `P-001`, `P-YYYYMMDDHHmmss`) |
-| `full_name`      | string | Patient's full name                       |
-| `contact_number` | string | Phone number                              |
-| `email_address`  | string | Email address                             |
-| `date_of_birth`  | string | ISO format `YYYY-MM-DD`                  |
+| Field                    | Type   | Description                               |
+|--------------------------|--------|-------------------------------------------|
+| `patient_id`             | string | Document ID (e.g., `P-001`, `P-YYYYMMDDHHmmss`) |
+| `full_name`              | string | Patient's full name                       |
+| `contact_number`         | string | Phone number                              |
+| `email_address`          | string | Email address                             |
+| `date_of_birth`          | string | ISO format `YYYY-MM-DD`                  |
+| `gender`                 | string | `Male`, `Female`, or `Other`              |
+| `blood_group`            | string | e.g., `A+`, `O-`, or `Unknown`           |
+| `address`                | string | Home address                              |
+| `emergency_contact_name` | string | Emergency contact's name                  |
+| `emergency_contact_number` | string | Emergency contact's phone               |
 
 ### `doctors` Collection
 
@@ -437,6 +452,7 @@ All endpoints are prefixed with `/api/`.
 | `doctor_name`   | string | Doctor's name                             |
 | `specialization`| string | Medical specialization                    |
 | `email_address` | string | Doctor's email (optional, used for admin-created logins) |
+| `status`        | string | Approval state: `pending`, `approved`, or `rejected` (self-registered doctors start `pending`; missing defaults to `approved`) |
 
 ### `appointment_slots` Collection
 
@@ -587,7 +603,8 @@ Weekdays only (Monday through Friday) is the demo convention; the API itself doe
 ### Self-Registration Defaults
 
 When a patient or doctor self-registers through the auth form:
-- Patient DOB defaults to `2000-01-01`
+- Patient DOB defaults to `2000-01-01` if not provided (patients can now enter their DOB in the form)
+- Patient medical/demographic fields (gender, blood group, address, emergency contact) are optional
 - Doctor specialization defaults to `"General"`
 
 ---
@@ -602,7 +619,7 @@ When a patient or doctor self-registers through the auth form:
 6. **N+1 Query Pattern** - Slot/consultation/prescription listing makes separate Firestore reads for each record to resolve doctor/patient details
 7. **Fixed Demo Slots** - Seed data ships with weekday-only slots in the 09:00-13:00 range
 8. **Legacy Components** - Three components are declared in the module but not routed (earlier iterations)
-9. **No Authorization on Lists** - All doctors and (unfiltered for admin) slots are visible to every authenticated user; filtering is done at the view level per role
+9. **No Object-Level Authorization on Slot Lists** - All appointment slots are visible to every authenticated user; per-owner filtering is done at the view level per role (doctors ARE filtered by approval status)
 
 ---
 

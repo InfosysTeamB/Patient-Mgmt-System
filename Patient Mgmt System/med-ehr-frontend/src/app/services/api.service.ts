@@ -53,6 +53,14 @@ export class ApiService {
     return this.http.delete(`${this.baseUrl}/doctors/${doctorId}/`);
   }
 
+  approveDoctor(doctorId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/doctors/${doctorId}/approve/`, {});
+  }
+
+  rejectDoctor(doctorId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/doctors/${doctorId}/reject/`, {});
+  }
+
   // Slot methods
   getSlots(): Observable<any> {
     return this.http.get(`${this.baseUrl}/slots/`);

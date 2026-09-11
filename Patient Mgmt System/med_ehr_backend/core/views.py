@@ -2,7 +2,7 @@ import datetime
 import secrets
 from rest_framework import viewsets, status
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from google.cloud.firestore_v1.base_query import FieldFilter
@@ -22,6 +22,24 @@ PRESCRIPTIONS_COL = 'prescriptions'
 
 
 DEFAULT_PROFILE_PASSWORD = 'medehr@123'
+
+# Doctor approval workflow states.
+DOCTOR_STATUS_PENDING = 'pending'
+DOCTOR_STATUS_APPROVED = 'approved'
+DOCTOR_STATUS_REJECTED = 'rejected'
+
+
+def _doctor_account_status(entity_id):
+    """Return the approval status for a doctor profile.
+
+    Missing status defaults to approved so legacy/seeded records keep working.
+    """
+    if not entity_id:
+        return DOCTOR_STATUS_APPROVED
+    doc = db.collection(DOCTORS_COL).document(entity_id).get()
+    if not doc.exists:
+        return None
+    return (doc.to_dict() or {}).get('status') or DOCTOR_STATUS_APPROVED
 
 
 def _generate_token():
@@ -155,8 +173,39 @@ class DoctorProfileViewSet(viewsets.ViewSet):
 
     def list(self, request):
         docs = db.collection(DOCTORS_COL).stream()
-        doctors = [{"id": doc.id, **doc.to_dict()} for doc in docs]
+        role = request.user.role
+        doctors = []
+        for doc in docs:
+            data = {"id": doc.id, **doc.to_dict()}
+            # Only admins see pending/rejected doctors; everyone else sees approved ones.
+            if role != 'admin' and data.get('status', DOCTOR_STATUS_APPROVED) != DOCTOR_STATUS_APPROVED:
+                continue
+            doctors.append(data)
         return Response(doctors)
+
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        if request.user.role != 'admin':
+            return Response({"error": "Only admins can approve doctors"}, status=status.HTTP_403_FORBIDDEN)
+
+        doc_ref = db.collection(DOCTORS_COL).document(pk)
+        if not doc_ref.get().exists:
+            return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        doc_ref.update({"status": DOCTOR_STATUS_APPROVED})
+        return Response({"id": pk, "status": DOCTOR_STATUS_APPROVED})
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        if request.user.role != 'admin':
+            return Response({"error": "Only admins can reject doctors"}, status=status.HTTP_403_FORBIDDEN)
+
+        doc_ref = db.collection(DOCTORS_COL).document(pk)
+        if not doc_ref.get().exists:
+            return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        doc_ref.update({"status": DOCTOR_STATUS_REJECTED})
+        return Response({"id": pk, "status": DOCTOR_STATUS_REJECTED})
 
     def create(self, request):
         if request.user.role != 'admin':
@@ -170,7 +219,10 @@ class DoctorProfileViewSet(viewsets.ViewSet):
         if db.collection(DOCTORS_COL).document(doctor_id).get().exists:
             return Response({"error": "Doctor ID already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
-        db.collection(DOCTORS_COL).document(doctor_id).set(_to_firestore_dict(data))
+        db.collection(DOCTORS_COL).document(doctor_id).set(_to_firestore_dict({
+            **data,
+            "status": DOCTOR_STATUS_APPROVED,
+        }))
         login_created = _create_user_for_profile(
             data.get('email_address'), data.get('doctor_name'), 'doctor', doctor_id
         )
@@ -188,9 +240,13 @@ class DoctorProfileViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         doc_ref = db.collection(DOCTORS_COL).document(pk)
-        if not doc_ref.get().exists:
+        current = doc_ref.get()
+        if not current.exists:
             return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
-        doc_ref.set(_to_firestore_dict(data))
+        # set() replaces the document, so preserve the approval status (the
+        # serializer does not include it and the frontend never submits it).
+        current_status = (current.to_dict() or {}).get('status') or DOCTOR_STATUS_APPROVED
+        doc_ref.set(_to_firestore_dict({**data, "status": current_status}))
         return Response(data)
 
     def partial_update(self, request, pk=None):
@@ -663,14 +719,30 @@ def login_view(request):
     for doc in docs:
         user = doc.to_dict()
         if user.get('password') == password:
-            token = _store_token(doc.id, user['role'], user.get('entity_id', ''))
+            role = user['role']
+            entity_id = user.get('entity_id', '')
+
+            if role == 'doctor':
+                status_value = _doctor_account_status(entity_id)
+                if status_value == DOCTOR_STATUS_PENDING:
+                    return Response(
+                        {"error": "Your account is pending admin approval. Please try again later."},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
+                if status_value == DOCTOR_STATUS_REJECTED:
+                    return Response(
+                        {"error": "Your registration was rejected by an administrator."},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
+
+            token = _store_token(doc.id, role, entity_id)
             return Response({
                 "token": token,
                 "id": doc.id,
                 "email": user['email'],
                 "name": user.get('name', ''),
-                "role": user['role'],
-                "entity_id": user.get('entity_id', ''),
+                "role": role,
+                "entity_id": entity_id,
             })
 
     return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -707,9 +779,14 @@ def register_view(request):
         db.collection(PATIENTS_COL).document(entity_id).set(_to_firestore_dict({
             "patient_id": entity_id,
             "full_name": name,
-            "contact_number": "",
+            "contact_number": request.data.get('contact_number', ''),
             "email_address": email,
-            "date_of_birth": "2000-01-01",
+            "date_of_birth": (request.data.get('date_of_birth') or '2000-01-01').strip(),
+            "gender": request.data.get('gender', ''),
+            "blood_group": request.data.get('blood_group', ''),
+            "address": request.data.get('address', ''),
+            "emergency_contact_name": request.data.get('emergency_contact_name', ''),
+            "emergency_contact_number": request.data.get('emergency_contact_number', ''),
         }))
 
     elif role == 'doctor':
@@ -718,6 +795,7 @@ def register_view(request):
             "doctor_id": entity_id,
             "doctor_name": name,
             "specialization": "General",
+            "status": DOCTOR_STATUS_PENDING,
         }))
 
     doc_ref = db.collection(USERS_COL).add({
@@ -727,6 +805,13 @@ def register_view(request):
         "role": role,
         "entity_id": entity_id,
     })
+
+    # Self-registered doctors must be approved by an admin before they can log in.
+    if role == 'doctor':
+        return Response({
+            "pending_approval": True,
+            "message": "Your registration has been submitted. An administrator will review and approve your account before you can log in.",
+        }, status=status.HTTP_201_CREATED)
 
     token = _store_token(doc_ref[1].id, role, entity_id)
 

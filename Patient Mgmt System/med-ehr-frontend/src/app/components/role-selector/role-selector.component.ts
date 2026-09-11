@@ -11,9 +11,23 @@ import { AuthService } from '../../services/auth.service';
 export class RoleSelectorComponent implements OnInit {
   isLogin = true;
   errorMsg = '';
+  infoMsg = '';
 
   loginForm = { email: '', password: '' };
-  registerForm = { name: '', email: '', password: '', role: 'patient', entity_id: '' };
+  registerForm = {
+    name: '',
+    email: '',
+    password: '',
+    role: 'patient',
+    entity_id: '',
+    contact_number: '',
+    date_of_birth: '',
+    gender: '',
+    blood_group: '',
+    address: '',
+    emergency_contact_name: '',
+    emergency_contact_number: ''
+  };
 
   constructor(private apiService: ApiService, private authService: AuthService, private router: Router) {}
 
@@ -47,6 +61,12 @@ export class RoleSelectorComponent implements OnInit {
     this.errorMsg = '';
     this.apiService.registerUser(this.registerForm).subscribe({
       next: (user) => {
+        if (user && user.pending_approval) {
+          this.infoMsg = user.message || 'Your registration has been submitted for admin approval.';
+          this.isLogin = true;
+          this.resetRegisterForm();
+          return;
+        }
         this.authService.setUser(user);
         this.router.navigate(['/' + user.role]);
       },
@@ -56,8 +76,26 @@ export class RoleSelectorComponent implements OnInit {
     });
   }
 
+  private resetRegisterForm(): void {
+    this.registerForm = {
+      name: '',
+      email: '',
+      password: '',
+      role: 'patient',
+      entity_id: '',
+      contact_number: '',
+      date_of_birth: '',
+      gender: '',
+      blood_group: '',
+      address: '',
+      emergency_contact_name: '',
+      emergency_contact_number: ''
+    };
+  }
+
   toggleMode(): void {
     this.isLogin = !this.isLogin;
     this.errorMsg = '';
+    this.infoMsg = '';
   }
 }

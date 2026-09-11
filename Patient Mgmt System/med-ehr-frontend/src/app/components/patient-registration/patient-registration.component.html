@@ -29,6 +29,46 @@
                 <td><label>Date of Birth:</label></td>
                 <td><input type="date" [(ngModel)]="newPatient.date_of_birth" name="date_of_birth" required></td>
             </tr>
+            <tr>
+                <td><label>Gender:</label></td>
+                <td>
+                    <select [(ngModel)]="newPatient.gender" name="gender">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Blood Group:</label></td>
+                <td>
+                    <select [(ngModel)]="newPatient.blood_group" name="blood_group">
+                        <option value="">Select blood group</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Address:</label></td>
+                <td><input type="text" [(ngModel)]="newPatient.address" name="address" placeholder="Street, city, state"></td>
+            </tr>
+            <tr>
+                <td><label>Emergency Contact Name:</label></td>
+                <td><input type="text" [(ngModel)]="newPatient.emergency_contact_name" name="emergency_contact_name" placeholder="Jane Doe"></td>
+            </tr>
+            <tr>
+                <td><label>Emergency Contact Number:</label></td>
+                <td><input type="text" [(ngModel)]="newPatient.emergency_contact_number" name="emergency_contact_number" placeholder="123-456-7890"></td>
+            </tr>
         </table>
         <button type="submit" class="btn-submit">Register Patient</button>
     </form>

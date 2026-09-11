@@ -1,1 +1,19 @@
 /* Styles provided globally in src/styles.css */
+
+.inline-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.edit-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .inline-edit-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

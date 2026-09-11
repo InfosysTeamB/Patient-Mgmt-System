@@ -17,7 +17,12 @@ export class PatientProfileComponent implements OnInit {
     full_name: '',
     contact_number: '',
     email_address: '',
-    date_of_birth: ''
+    date_of_birth: '',
+    gender: '',
+    blood_group: '',
+    address: '',
+    emergency_contact_name: '',
+    emergency_contact_number: ''
   };
 
   constructor(private apiService: ApiService, private authService: AuthService, private toast: ToastService) {}
@@ -48,7 +53,12 @@ export class PatientProfileComponent implements OnInit {
       full_name: this.patientProfile.full_name,
       contact_number: this.patientProfile.contact_number,
       email_address: this.patientProfile.email_address,
-      date_of_birth: this.patientProfile.date_of_birth
+      date_of_birth: this.patientProfile.date_of_birth,
+      gender: this.patientProfile.gender || '',
+      blood_group: this.patientProfile.blood_group || '',
+      address: this.patientProfile.address || '',
+      emergency_contact_name: this.patientProfile.emergency_contact_name || '',
+      emergency_contact_number: this.patientProfile.emergency_contact_number || ''
     };
     this.editMode = true;
   }

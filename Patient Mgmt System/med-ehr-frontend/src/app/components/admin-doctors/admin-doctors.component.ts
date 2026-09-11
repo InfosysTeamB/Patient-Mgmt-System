@@ -43,10 +43,15 @@ export class AdminDoctorsComponent implements OnInit {
     });
   }
 
+  get pendingDoctors(): any[] {
+    return this.doctors.filter(d => (d.status || 'approved') === 'pending');
+  }
+
   get filteredDoctors(): any[] {
-    if (!this.searchTerm) return this.doctors;
+    let list = this.doctors.filter(d => (d.status || 'approved') !== 'pending');
+    if (!this.searchTerm) return list;
     const term = this.searchTerm.toLowerCase();
-    return this.doctors.filter(d =>
+    return list.filter(d =>
       d.doctor_name.toLowerCase().includes(term) ||
       d.doctor_id.toLowerCase().includes(term) ||
       (d.specialization || '').toLowerCase().includes(term)
@@ -64,6 +69,39 @@ export class AdminDoctorsComponent implements OnInit {
         this.loadDoctors();
       },
       error: (err) => this.toast.error(err.error?.error || 'Failed to register doctor.')
+    });
+  }
+
+  async approveDoctor(d: any) {
+    const confirmed = await this.confirm.confirm({
+      title: 'Approve Doctor',
+      message: `Approve Dr. ${d.doctor_name}? They will be able to log in and manage their schedule.`,
+      confirmText: 'Approve'
+    });
+    if (!confirmed) return;
+    this.apiService.approveDoctor(d.doctor_id).subscribe({
+      next: () => {
+        this.toast.success(`Dr. ${d.doctor_name} approved.`);
+        this.loadDoctors();
+      },
+      error: (err) => this.toast.error(err.error?.error || 'Failed to approve doctor.')
+    });
+  }
+
+  async rejectDoctor(d: any) {
+    const confirmed = await this.confirm.confirm({
+      title: 'Reject Doctor',
+      message: `Reject Dr. ${d.doctor_name}? They will not be able to log in.`,
+      confirmText: 'Reject',
+      danger: true
+    });
+    if (!confirmed) return;
+    this.apiService.rejectDoctor(d.doctor_id).subscribe({
+      next: () => {
+        this.toast.success(`Dr. ${d.doctor_name} rejected.`);
+        this.loadDoctors();
+      },
+      error: (err) => this.toast.error(err.error?.error || 'Failed to reject doctor.')
     });
   }
 

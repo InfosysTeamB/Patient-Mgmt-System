@@ -18,11 +18,27 @@ export class AdminPatientsComponent implements OnInit {
     full_name: '',
     contact_number: '',
     email_address: '',
-    date_of_birth: ''
+    date_of_birth: '',
+    gender: '',
+    blood_group: '',
+    address: '',
+    emergency_contact_name: '',
+    emergency_contact_number: ''
   };
 
   editingId: string | null = null;
-  editForm = { patient_id: '', full_name: '', contact_number: '', email_address: '', date_of_birth: '' };
+  editForm = {
+    patient_id: '',
+    full_name: '',
+    contact_number: '',
+    email_address: '',
+    date_of_birth: '',
+    gender: '',
+    blood_group: '',
+    address: '',
+    emergency_contact_name: '',
+    emergency_contact_number: ''
+  };
 
   constructor(private apiService: ApiService, private toast: ToastService, private confirm: ConfirmService) {}
 
@@ -61,7 +77,7 @@ export class AdminPatientsComponent implements OnInit {
         if (res && res.login_created) {
           this.toast.info(`Login created: ${this.newPatient.email_address} / medehr@123`);
         }
-        this.newPatient = { patient_id: '', full_name: '', contact_number: '', email_address: '', date_of_birth: '' };
+        this.newPatient = { patient_id: '', full_name: '', contact_number: '', email_address: '', date_of_birth: '', gender: '', blood_group: '', address: '', emergency_contact_name: '', emergency_contact_number: '' };
         this.loadPatients();
       },
       error: (err) => this.toast.error(err.error?.error || 'Failed to register patient.')
@@ -75,7 +91,12 @@ export class AdminPatientsComponent implements OnInit {
       full_name: p.full_name,
       contact_number: p.contact_number,
       email_address: p.email_address,
-      date_of_birth: p.date_of_birth
+      date_of_birth: p.date_of_birth,
+      gender: p.gender || '',
+      blood_group: p.blood_group || '',
+      address: p.address || '',
+      emergency_contact_name: p.emergency_contact_name || '',
+      emergency_contact_number: p.emergency_contact_number || ''
     };
   }
 

@@ -25,6 +25,35 @@
     </div>
   </div>
 
+  <!-- Pending Approvals -->
+  <div class="form-panel pending-panel" *ngIf="pendingDoctors.length > 0">
+    <h4>Pending Doctor Approvals ({{ pendingDoctors.length }})</h4>
+    <p class="pending-hint">These doctors self-registered and are waiting for your approval. They cannot log in until approved.</p>
+    <table class="info-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Specialization</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of pendingDoctors">
+          <td>{{ d.doctor_id }}</td>
+          <td>Dr. {{ d.doctor_name }}</td>
+          <td>{{ d.specialization }}</td>
+          <td><span class="status-badge pending">Pending</span></td>
+          <td>
+            <button class="btn-save-sm" (click)="approveDoctor(d)">Approve</button>
+            <button class="btn-delete-sm" (click)="rejectDoctor(d)">Reject</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <!-- List -->
   <input type="text" [(ngModel)]="searchTerm" class="search-input" placeholder="Search doctors...">
   <app-loading-spinner *ngIf="loading" label="Loading doctors..."></app-loading-spinner>
@@ -38,6 +67,7 @@
         <th>ID</th>
         <th>Name</th>
         <th>Specialization</th>
+        <th>Status</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -48,6 +78,9 @@
           <td><input type="text" [(ngModel)]="editForm.doctor_name"></td>
           <td><input type="text" [(ngModel)]="editForm.specialization"></td>
           <td>
+            <span class="status-badge" [ngClass]="d.status === 'rejected' ? 'booked' : ''">{{ d.status === 'rejected' ? 'Rejected' : 'Active' }}</span>
+          </td>
+          <td>
             <button class="btn-save-sm" (click)="saveEdit()">Save</button>
             <button class="btn-cancel-sm" (click)="editingId = null">Cancel</button>
           </td>
@@ -56,6 +89,9 @@
           <td>{{ d.doctor_id }}</td>
           <td>Dr. {{ d.doctor_name }}</td>
           <td>{{ d.specialization }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="d.status === 'rejected' ? 'booked' : ''">{{ d.status === 'rejected' ? 'Rejected' : 'Active' }}</span>
+          </td>
           <td>
             <button class="btn-edit-sm" (click)="startEdit(d)">Edit</button>
             <button class="btn-delete-sm" (click)="deleteDoctor(d)">Delete</button>

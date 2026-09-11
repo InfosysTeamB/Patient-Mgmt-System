@@ -238,6 +238,8 @@ a {
 .status-badge.available,
 .slot-badge.available { background: #f0fdf4; color: #15803d; }
 .status-badge.completed { background: #eff6ff; color: #1d4ed8; }
+.status-badge.pending { background: #fffbeb; color: #b45309; }
+.status-badge.rejected, .status-badge.denied { background: #fef2f2; color: #b91c1c; }
 .slot-badge.unassigned { background: #f1f5f9; color: #64748b; }
 
 /* Forms */

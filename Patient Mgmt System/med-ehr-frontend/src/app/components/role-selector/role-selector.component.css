@@ -147,6 +147,12 @@
   background: #fff;
 }
 
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
@@ -182,6 +188,18 @@
   font-size: 13px;
   margin-bottom: 12px;
   text-align: center;
+}
+
+.info-msg {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  text-align: center;
+  line-height: 1.5;
 }
 
 .toggle-text {

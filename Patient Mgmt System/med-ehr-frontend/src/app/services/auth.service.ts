@@ -1,13 +1,28 @@
 import { Injectable } from '@angular/core';
 
+const STORAGE_KEY = 'medehr_user';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private user: any = null;
 
+  constructor() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try {
+        this.user = JSON.parse(raw);
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+        this.user = null;
+      }
+    }
+  }
+
   setUser(user: any): void {
     this.user = user;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
   }
 
   getUser(): any {
@@ -28,5 +43,6 @@ export class AuthService {
 
   logout(): void {
     this.user = null;
+    localStorage.removeItem(STORAGE_KEY);
   }
 }

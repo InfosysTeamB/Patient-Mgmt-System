@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './role-selector.component.html',
   styleUrls: ['./role-selector.component.css']
 })
-export class RoleSelectorComponent {
+export class RoleSelectorComponent implements OnInit {
   isLogin = true;
   errorMsg = '';
 
@@ -16,6 +16,19 @@ export class RoleSelectorComponent {
   registerForm = { name: '', email: '', password: '', role: 'patient', entity_id: '' };
 
   constructor(private apiService: ApiService, private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/' + this.authService.getRole()]);
+    }
+  }
+
+  private describeError(err: any, fallback: string): string {
+    if (err.status === 0) {
+      return 'Cannot reach the server. Make sure the backend is running (python manage.py runserver) and try again.';
+    }
+    return err.error?.error || fallback;
+  }
 
   login(): void {
     this.errorMsg = '';
@@ -25,7 +38,7 @@ export class RoleSelectorComponent {
         this.router.navigate(['/' + user.role]);
       },
       error: (err) => {
-        this.errorMsg = err.error?.error || 'Login failed';
+        this.errorMsg = this.describeError(err, 'Login failed');
       }
     });
   }
@@ -38,7 +51,7 @@ export class RoleSelectorComponent {
         this.router.navigate(['/' + user.role]);
       },
       error: (err) => {
-        this.errorMsg = err.error?.error || 'Registration failed';
+        this.errorMsg = this.describeError(err, 'Registration failed');
       }
     });
   }

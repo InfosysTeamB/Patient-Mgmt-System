@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { RoleSelectorComponent } from './components/role-selector/role-selector.component';
+import { AuthGuard } from './guards/auth.guard';
 
 // Admin
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
@@ -32,6 +33,7 @@ const routes: Routes = [
   {
     path: 'admin',
     component: AdminDashboardComponent,
+    canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: AdminOverviewComponent },
@@ -45,6 +47,7 @@ const routes: Routes = [
   {
     path: 'patient',
     component: PatientPortalComponent,
+    canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: PatientOverviewComponent },
@@ -59,6 +62,7 @@ const routes: Routes = [
   {
     path: 'doctor',
     component: DoctorPortalComponent,
+    canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: DoctorOverviewComponent },

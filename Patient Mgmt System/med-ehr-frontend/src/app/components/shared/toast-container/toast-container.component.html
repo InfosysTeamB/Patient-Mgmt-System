@@ -1,0 +1,11 @@
+<div class="toast-stack">
+  <div *ngFor="let t of toasts" class="toast" [class]="'toast toast-' + t.type" (click)="dismiss(t.id)">
+    <span class="toast-icon">
+      <span *ngIf="t.type === 'success'">&#10003;</span>
+      <span *ngIf="t.type === 'error'">&#10007;</span>
+      <span *ngIf="t.type === 'info'">&#8505;</span>
+    </span>
+    <span class="toast-message">{{ t.message }}</span>
+    <span class="toast-close">&#10005;</span>
+  </div>
+</div>

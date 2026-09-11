@@ -1,0 +1,83 @@
+.welcome-stats {
+  margin-bottom: 18px;
+}
+
+.stat-card {
+  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--color-patient);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.next-appointment {
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 24px;
+}
+
+.next-appointment h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #065f46;
+  margin-bottom: 12px;
+}
+
+.appointment-detail {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.detail-icon {
+  font-size: 28px;
+}
+
+.detail-date {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.detail-time {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 3px;
+}
+
+.quick-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-link {
+  display: inline-block;
+  padding: 9px 16px;
+  background: var(--color-patient);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.quick-link:hover { background: #047857; }

@@ -1,0 +1,29 @@
+<div class="section-card">
+  <h3>Welcome, {{ userName }}!</h3>
+
+  <app-loading-spinner *ngIf="loading" label="Loading your dashboard..."></app-loading-spinner>
+
+  <div class="welcome-stats">
+    <div class="stat-card">
+      <span class="stat-value">{{ upcomingCount }}</span>
+      <span class="stat-label">Upcoming Appointments</span>
+    </div>
+  </div>
+
+  <div class="next-appointment" *ngIf="nextAppointment">
+    <h4>Next Appointment</h4>
+    <div class="appointment-detail">
+      <span class="detail-icon">&#128197;</span>
+      <div>
+        <div class="detail-date">{{ nextAppointment.appointment_date }}</div>
+        <div class="detail-time">{{ nextAppointment.day_of_week }} &middot; {{ formatTime(nextAppointment.start_time) }} - {{ formatTime(nextAppointment.end_time) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-links">
+    <a routerLink="/patient/book" class="quick-link">Book an appointment</a>
+    <a routerLink="/patient/appointments" class="quick-link">View my appointments</a>
+    <a routerLink="/patient/doctors" class="quick-link">Find doctors</a>
+  </div>
+</div>

@@ -1,20 +1,26 @@
 <div class="section-card">
   <h3>My Profile</h3>
 
-  <div class="success-msg" *ngIf="msg">{{ msg }}</div>
+  <app-loading-spinner *ngIf="loading" label="Loading your profile..."></app-loading-spinner>
+
+  <div *ngIf="!loading && !patientProfile" class="empty-msg">
+    Profile not found. Please contact an administrator.
+  </div>
 
   <!-- View Mode -->
-  <table class="info-table" *ngIf="!editMode && patientProfile">
-    <tr><td><strong>Name:</strong></td><td>{{ patientProfile.full_name }}</td></tr>
-    <tr><td><strong>Patient ID:</strong></td><td>{{ patientProfile.patient_id }}</td></tr>
-    <tr><td><strong>Contact:</strong></td><td>{{ patientProfile.contact_number }}</td></tr>
-    <tr><td><strong>Email:</strong></td><td>{{ patientProfile.email_address }}</td></tr>
-    <tr><td><strong>Date of Birth:</strong></td><td>{{ patientProfile.date_of_birth }}</td></tr>
-  </table>
+  <ng-container *ngIf="!loading && patientProfile">
+    <table class="info-table" *ngIf="!editMode">
+      <tr><td><strong>Name:</strong></td><td>{{ patientProfile.full_name }}</td></tr>
+      <tr><td><strong>Patient ID:</strong></td><td>{{ patientProfile.patient_id }}</td></tr>
+      <tr><td><strong>Contact:</strong></td><td>{{ patientProfile.contact_number }}</td></tr>
+      <tr><td><strong>Email:</strong></td><td>{{ patientProfile.email_address }}</td></tr>
+      <tr><td><strong>Date of Birth:</strong></td><td>{{ patientProfile.date_of_birth }}</td></tr>
+    </table>
 
-  <div class="action-row" *ngIf="!editMode && patientProfile">
-    <button class="btn-edit" (click)="startEdit()">Edit Profile</button>
-  </div>
+    <div class="action-row" *ngIf="!editMode">
+      <button class="btn-edit" (click)="startEdit()">Edit Profile</button>
+    </div>
+  </ng-container>
 
   <!-- Edit Mode -->
   <div class="edit-form" *ngIf="editMode">

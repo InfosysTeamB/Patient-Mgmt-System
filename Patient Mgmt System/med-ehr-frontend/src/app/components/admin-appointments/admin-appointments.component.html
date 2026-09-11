@@ -1,8 +1,6 @@
 <div class="section-card">
   <h3>Appointments & Slots Management</h3>
 
-  <div class="success-msg" *ngIf="msg">{{ msg }}</div>
-
   <!-- Create New Slot -->
   <div class="form-panel">
     <h4>Create New Slot</h4>
@@ -44,8 +42,12 @@
   </div>
 
   <!-- Slot List -->
-  <div *ngIf="sortedSlots.length === 0" class="empty-msg">No slots created yet.</div>
-  <table *ngIf="sortedSlots.length > 0" class="info-table">
+  <app-loading-spinner *ngIf="loading" label="Loading slots..."></app-loading-spinner>
+  <div *ngIf="!loading && sortedSlots.length === 0" class="empty-msg">
+    No slots created yet.
+    <div class="empty-cta">Use the form above to create your first appointment slot.</div>
+  </div>
+  <table *ngIf="!loading && sortedSlots.length > 0" class="info-table">
     <thead>
       <tr>
         <th>Doctor</th>

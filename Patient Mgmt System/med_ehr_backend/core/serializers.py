@@ -13,6 +13,7 @@ class DoctorProfileSerializer(serializers.Serializer):
     doctor_id = serializers.CharField(max_length=20)
     doctor_name = serializers.CharField(max_length=100)
     specialization = serializers.CharField(max_length=100)
+    email_address = serializers.EmailField(required=False, allow_blank=True, allow_null=True, default='')
 
 
 class AppointmentSlotSerializer(serializers.Serializer):

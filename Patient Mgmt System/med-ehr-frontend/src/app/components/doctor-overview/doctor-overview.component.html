@@ -1,0 +1,42 @@
+<div class="section-card">
+  <h3>Welcome, {{ userName }}!</h3>
+
+  <app-loading-spinner *ngIf="loading" label="Loading your dashboard..."></app-loading-spinner>
+
+  <div class="welcome-stats">
+    <div class="stat-card">
+      <span class="stat-value">{{ totalSlots }}</span>
+      <span class="stat-label">Total Schedule Slots</span>
+    </div>
+    <div class="stat-card stat-today">
+      <span class="stat-value">{{ todayAppointments.length }}</span>
+      <span class="stat-label">Appointments Today</span>
+    </div>
+  </div>
+
+  <div class="today-appointments" *ngIf="todayAppointments.length > 0">
+    <h4>Today's Schedule</h4>
+    <table class="info-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Patient</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of todayAppointments">
+          <td>{{ formatTime(a.start_time) }} - {{ formatTime(a.end_time) }}</td>
+          <td>{{ getPatientName(a.patient_id) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="!loading && todayAppointments.length === 0" class="empty-msg">
+    No appointments scheduled for today.
+  </div>
+
+  <div class="quick-links">
+    <a routerLink="/doctor/schedule" class="quick-link">Manage schedule</a>
+    <a routerLink="/doctor/appointments" class="quick-link">View all appointments</a>
+  </div>
+</div>

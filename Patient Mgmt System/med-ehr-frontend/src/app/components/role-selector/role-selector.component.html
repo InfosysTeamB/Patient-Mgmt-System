@@ -77,7 +77,6 @@
           <select id="reg-role" [(ngModel)]="registerForm.role" name="role">
             <option value="patient">Patient</option>
             <option value="doctor">Doctor</option>
-            <option value="admin">Admin</option>
           </select>
         </div>
         <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
@@ -96,7 +95,7 @@
         Admin <span class="role-pill admin">Admin</span><br>
         admin@medehr.com / admin123<br>
         Patient <span class="role-pill patient">Patient</span><br>
-        muhilan@medehr.com / patient123<br>
+        patient@medehr.com / patient123<br>
         Doctor <span class="role-pill doctor">Doctor</span><br>
         wilson@medehr.com / doctor123
       </div>

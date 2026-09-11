@@ -1,0 +1,34 @@
+<div class="section-card">
+  <h3>Dashboard</h3>
+
+  <app-loading-spinner *ngIf="statsLoading" label="Loading statistics..."></app-loading-spinner>
+
+  <div *ngIf="!statsLoading" class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-value">{{ patientCount }}</span>
+      <span class="stat-label">Total Patients</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ doctorCount }}</span>
+      <span class="stat-label">Total Doctors</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ slotCount }}</span>
+      <span class="stat-label">Total Slots</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ availableCount }}</span>
+      <span class="stat-label">Available</span>
+    </div>
+    <div class="stat-card stat-booked">
+      <span class="stat-value">{{ bookedCount }}</span>
+      <span class="stat-label">Booked</span>
+    </div>
+  </div>
+
+  <div class="quick-links">
+    <a routerLink="/admin/patients" class="quick-link">Manage Patients</a>
+    <a routerLink="/admin/doctors" class="quick-link">Manage Doctors</a>
+    <a routerLink="/admin/appointments" class="quick-link">Manage Appointments</a>
+  </div>
+</div>

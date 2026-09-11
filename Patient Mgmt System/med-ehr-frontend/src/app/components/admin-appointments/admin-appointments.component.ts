@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-admin-appointments',
@@ -10,6 +12,8 @@ export class AdminAppointmentsComponent implements OnInit {
   slots: any[] = [];
   doctors: any[] = [];
   patients: any[] = [];
+  loading = true;
+  dataLoaded = 0;
 
   timeOptions = [
     { start: '09:00:00', end: '10:00:00', label: '09:00 AM - 10:00 AM' },
@@ -32,18 +36,34 @@ export class AdminAppointmentsComponent implements OnInit {
     doctor_id: '', appointment_date: '', day_of_week: '', start_time: '', end_time: '', status: ''
   };
 
-  msg = '';
-
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private toast: ToastService, private confirm: ConfirmService) {}
 
   ngOnInit(): void {
     this.loadData();
   }
 
   loadData() {
-    this.apiService.getDoctors().subscribe((d: any[]) => this.doctors = d);
-    this.apiService.getPatients().subscribe((p: any[]) => this.patients = p);
-    this.apiService.getSlots().subscribe((s: any[]) => this.slots = s);
+    this.loading = true;
+    this.dataLoaded = 0;
+    this.apiService.getDoctors().subscribe(d => {
+      this.doctors = d;
+      this.checkLoaded();
+    });
+    this.apiService.getPatients().subscribe(p => {
+      this.patients = p;
+      this.checkLoaded();
+    });
+    this.apiService.getSlots().subscribe(s => {
+      this.slots = s;
+      this.checkLoaded();
+    });
+  }
+
+  checkLoaded() {
+    this.dataLoaded++;
+    if (this.dataLoaded >= 3) {
+      this.loading = false;
+    }
   }
 
   getDoctorName(id: string): string {
@@ -67,17 +87,17 @@ export class AdminAppointmentsComponent implements OnInit {
 
   createSlot() {
     if (!this.newSlot.doctor_id || !this.newSlot.appointment_date || !this.newSlot.day_of_week || !this.newSlot.start_time || !this.newSlot.end_time) {
-      this.msg = 'Please fill in all slot fields.';
+      this.toast.error('Please fill in all slot fields.');
       return;
     }
     const payload = { ...this.newSlot, status: 'Available' };
     this.apiService.createSlot(payload).subscribe({
       next: () => {
-        this.msg = 'Slot created successfully!';
+        this.toast.success('Slot created successfully!');
         this.newSlot = { doctor_id: '', appointment_date: '', day_of_week: '', start_time: '', end_time: '' };
         this.loadData();
       },
-      error: (err) => this.msg = err.error?.error || 'Failed to create slot.'
+      error: (err) => this.toast.error(err.error?.error || 'Failed to create slot.')
     });
   }
 
@@ -96,22 +116,28 @@ export class AdminAppointmentsComponent implements OnInit {
   saveEdit() {
     this.apiService.updateSlot(this.editingId as string, this.editForm).subscribe({
       next: () => {
-        this.msg = 'Slot updated!';
+        this.toast.success('Slot updated!');
         this.editingId = null;
         this.loadData();
       },
-      error: (err) => this.msg = err.error?.error || 'Failed to update.'
+      error: (err) => this.toast.error(err.error?.error || 'Failed to update.')
     });
   }
 
-  deleteSlot(s: any) {
-    if (!confirm('Delete this slot?')) return;
+  async deleteSlot(s: any) {
+    const confirmed = await this.confirm.confirm({
+      title: 'Delete Slot',
+      message: `Delete the ${s.day_of_week} ${s.start_time} slot? This action cannot be undone.`,
+      confirmText: 'Delete',
+      danger: true
+    });
+    if (!confirmed) return;
     this.apiService.deleteSlot(s.id).subscribe({
       next: () => {
-        this.msg = 'Slot deleted.';
+        this.toast.success('Slot deleted.');
         this.loadData();
       },
-      error: () => this.msg = 'Failed to delete.'
+      error: () => this.toast.error('Failed to delete.')
     });
   }
 }

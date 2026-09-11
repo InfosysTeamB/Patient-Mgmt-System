@@ -9,26 +9,41 @@ import { AuthService } from '../../services/auth.service';
 })
 export class DoctorAppointmentsComponent implements OnInit {
   myAppointments: any[] = [];
-  patients: any[] = [];
+  expandedPatientId: string | null = null;
+  loading = true;
 
   constructor(private apiService: ApiService, private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData() {
+    this.loading = true;
     const entityId = this.authService.getEntityId();
-    this.apiService.getPatients().subscribe((p: any[]) => this.patients = p);
-    this.apiService.getSlots().subscribe((s: any[]) => {
-      const mySlots = s.filter(sl => sl.doctor_id === entityId);
-      this.myAppointments = mySlots.filter(sl => sl.status === 'Booked');
+    this.apiService.getSlots().subscribe({
+      next: (s: any[]) => {
+        const mySlots = s.filter(sl => sl.doctor_id === entityId);
+        this.myAppointments = mySlots
+          .filter(sl => sl.status === 'Booked')
+          .sort((a, b) => (a.appointment_date || '').localeCompare(b.appointment_date || ''));
+        this.loading = false;
+      },
+      error: () => this.loading = false
     });
   }
 
-  getPatientName(patientId: string): string {
-    const p = this.patients.find(pat => pat.patient_id === patientId);
-    return p ? p.full_name : patientId;
+  getPatientDetails(patientId: string): any {
+    const appt = this.myAppointments.find(a => a.patient_id === patientId);
+    return appt ? appt.patient_details : null;
   }
 
-  getPatientContact(patientId: string): string {
-    const p = this.patients.find(pat => pat.patient_id === patientId);
-    return p ? p.contact_number : '-';
+  getPatientName(patientId: string): string {
+    const details = this.getPatientDetails(patientId);
+    return details ? details.full_name : (patientId || 'Unknown');
+  }
+
+  toggleDetails(patientId: string): void {
+    this.expandedPatientId = this.expandedPatientId === patientId ? null : patientId;
   }
 }

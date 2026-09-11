@@ -31,6 +31,16 @@ import { PatientRegistrationComponent } from './components/patient-registration/
 import { DoctorRegistrationComponent } from './components/doctor-registration/doctor-registration.component';
 import { AppointmentBookingComponent } from './components/appointment-booking/appointment-booking.component';
 
+// Shared UI
+import { ToastContainerComponent } from './components/shared/toast-container/toast-container.component';
+import { ConfirmDialogComponent } from './components/shared/confirm-dialog/confirm-dialog.component';
+import { LoadingSpinnerComponent } from './components/shared/loading-spinner/loading-spinner.component';
+
+// Dashboards
+import { AdminOverviewComponent } from './components/admin-overview/admin-overview.component';
+import { PatientOverviewComponent } from './components/patient-overview/patient-overview.component';
+import { DoctorOverviewComponent } from './components/doctor-overview/doctor-overview.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -50,7 +60,13 @@ import { AppointmentBookingComponent } from './components/appointment-booking/ap
     DoctorAppointmentsComponent,
     PatientRegistrationComponent,
     DoctorRegistrationComponent,
-    AppointmentBookingComponent
+    AppointmentBookingComponent,
+    ToastContainerComponent,
+    ConfirmDialogComponent,
+    LoadingSpinnerComponent,
+    AdminOverviewComponent,
+    PatientOverviewComponent,
+    DoctorOverviewComponent
   ],
   imports: [
     BrowserModule,

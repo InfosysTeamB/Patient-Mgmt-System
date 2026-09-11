@@ -9,11 +9,18 @@ import { ApiService } from '../../services/api.service';
 export class PatientDoctorsComponent implements OnInit {
   doctors: any[] = [];
   searchTerm: string = '';
+  loading = true;
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.apiService.getDoctors().subscribe((d: any[]) => this.doctors = d);
+    this.apiService.getDoctors().subscribe({
+      next: (d: any[]) => {
+        this.doctors = d;
+        this.loading = false;
+      },
+      error: () => this.loading = false
+    });
   }
 
   get filteredDoctors(): any[] {

@@ -1,8 +1,6 @@
 <div class="section-card">
   <h3>My Schedule</h3>
 
-  <div class="success-msg" *ngIf="msg">{{ msg }}</div>
-
   <!-- Create New Slot -->
   <div class="create-slot-form">
     <h4>Add Availability</h4>
@@ -37,26 +35,34 @@
   </div>
 
   <!-- Schedule Grid -->
-  <table class="grid-table">
-    <thead>
-      <tr>
-        <th>Time</th>
-        <th *ngFor="let day of weekDays">{{ day }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let t of timeSlots">
-        <td>{{ t.label }}</td>
-        <td *ngFor="let day of weekDays">
-          <ng-container *ngIf="getSlotForTimeAndDay(t.start, day) as slot; else noSlot">
-            <div class="slot-cell">
-              <span [class]="'slot-badge ' + (slot.status | lowercase)">{{ slot.status }}</span>
-              <button *ngIf="slot.status === 'Available'" class="btn-delete" (click)="deleteSlot(slot.id)">Delete</button>
-            </div>
-          </ng-container>
-          <ng-template #noSlot><span class="slot-badge unassigned">-</span></ng-template>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <app-loading-spinner *ngIf="loading" label="Loading your schedule..."></app-loading-spinner>
+  <ng-container *ngIf="!loading">
+    <div *ngIf="mySlots.length === 0" class="empty-msg">
+      You haven't added any availability yet.
+      <div class="empty-cta">Use the form above to add your first time slot.</div>
+    </div>
+    <table class="grid-table" *ngIf="mySlots.length > 0">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th *ngFor="let day of weekDays">{{ day }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of timeSlots">
+          <td>{{ t.label }}</td>
+          <td *ngFor="let day of weekDays">
+            <ng-container *ngIf="getSlotForTimeAndDay(t.start, day) as slot; else noSlot">
+              <div class="slot-cell">
+                <span [class]="'slot-badge ' + (slot.status | lowercase)">{{ slot.status }}</span>
+                <span class="slot-doctor" *ngIf="slot.status === 'Booked' && getPatientName(slot)">{{ getPatientName(slot) }}</span>
+                <button *ngIf="slot.status === 'Available'" class="btn-delete-sm" (click)="deleteSlot(slot)">Delete</button>
+              </div>
+            </ng-container>
+            <ng-template #noSlot><span class="slot-badge unassigned">-</span></ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
 </div>

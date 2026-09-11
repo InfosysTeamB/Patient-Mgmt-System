@@ -1,18 +1,24 @@
 <div class="section-card">
   <h3>My Profile</h3>
 
-  <div class="success-msg" *ngIf="msg">{{ msg }}</div>
+  <app-loading-spinner *ngIf="loading" label="Loading your profile..."></app-loading-spinner>
+
+  <div *ngIf="!loading && !doctorProfile" class="empty-msg">
+    Profile not found. Please contact an administrator.
+  </div>
 
   <!-- View Mode -->
-  <table class="info-table" *ngIf="!editMode && doctorProfile">
-    <tr><td><strong>Name:</strong></td><td>Dr. {{ doctorProfile.doctor_name }}</td></tr>
-    <tr><td><strong>Doctor ID:</strong></td><td>{{ doctorProfile.doctor_id }}</td></tr>
-    <tr><td><strong>Specialization:</strong></td><td>{{ doctorProfile.specialization }}</td></tr>
-  </table>
+  <ng-container *ngIf="!loading && doctorProfile">
+    <table class="info-table" *ngIf="!editMode">
+      <tr><td><strong>Name:</strong></td><td>Dr. {{ doctorProfile.doctor_name }}</td></tr>
+      <tr><td><strong>Doctor ID:</strong></td><td>{{ doctorProfile.doctor_id }}</td></tr>
+      <tr><td><strong>Specialization:</strong></td><td>{{ doctorProfile.specialization }}</td></tr>
+    </table>
 
-  <div class="action-row" *ngIf="!editMode && doctorProfile">
-    <button class="btn-edit" (click)="startEdit()">Edit Profile</button>
-  </div>
+    <div class="action-row" *ngIf="!editMode">
+      <button class="btn-edit" (click)="startEdit()">Edit Profile</button>
+    </div>
+  </ng-container>
 
   <!-- Edit Mode -->
   <div class="edit-form" *ngIf="editMode">

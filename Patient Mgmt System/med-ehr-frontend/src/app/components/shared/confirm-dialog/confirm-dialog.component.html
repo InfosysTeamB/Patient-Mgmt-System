@@ -1,0 +1,12 @@
+<div class="confirm-overlay" *ngIf="confirmService.isOpen()" (click)="confirmService.reject()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <h3>{{ confirmService.getOptions()?.title }}</h3>
+    <p>{{ confirmService.getOptions()?.message }}</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" (click)="confirmService.reject()">{{ confirmService.getOptions()?.cancelText || 'Cancel' }}</button>
+      <button [class]="confirmService.getOptions()?.danger ? 'btn-delete' : 'btn-save'" (click)="confirmService.accept()">
+        {{ confirmService.getOptions()?.confirmText || 'Confirm' }}
+      </button>
+    </div>
+  </div>
+</div>

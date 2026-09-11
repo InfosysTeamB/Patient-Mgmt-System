@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-admin-doctors',
@@ -9,26 +11,36 @@ import { ApiService } from '../../services/api.service';
 export class AdminDoctorsComponent implements OnInit {
   doctors: any[] = [];
   searchTerm: string = '';
+  loading = true;
 
   newDoctor = {
     doctor_id: '',
     doctor_name: '',
-    specialization: ''
+    specialization: '',
+    email_address: ''
   };
 
   editingId: string | null = null;
-  editForm = { doctor_id: '', doctor_name: '', specialization: '' };
+  editForm = { doctor_id: '', doctor_name: '', specialization: '', email_address: '' };
 
-  msg = '';
-
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private toast: ToastService, private confirm: ConfirmService) {}
 
   ngOnInit(): void {
     this.loadDoctors();
   }
 
   loadDoctors() {
-    this.apiService.getDoctors().subscribe((d: any[]) => this.doctors = d);
+    this.loading = true;
+    this.apiService.getDoctors().subscribe({
+      next: (d: any[]) => {
+        this.doctors = d;
+        this.loading = false;
+      },
+      error: () => {
+        this.toast.error('Failed to load doctors.');
+        this.loading = false;
+      }
+    });
   }
 
   get filteredDoctors(): any[] {
@@ -43,12 +55,15 @@ export class AdminDoctorsComponent implements OnInit {
 
   registerDoctor() {
     this.apiService.registerDoctor(this.newDoctor).subscribe({
-      next: () => {
-        this.msg = 'Doctor registered successfully!';
-        this.newDoctor = { doctor_id: '', doctor_name: '', specialization: '' };
+      next: (res: any) => {
+        this.toast.success('Doctor registered successfully!');
+        if (res && res.login_created) {
+          this.toast.info(`Login created: ${this.newDoctor.email_address} / medehr@123`);
+        }
+        this.newDoctor = { doctor_id: '', doctor_name: '', specialization: '', email_address: '' };
         this.loadDoctors();
       },
-      error: (err) => this.msg = err.error?.error || 'Failed to register doctor.'
+      error: (err) => this.toast.error(err.error?.error || 'Failed to register doctor.')
     });
   }
 
@@ -57,29 +72,36 @@ export class AdminDoctorsComponent implements OnInit {
     this.editForm = {
       doctor_id: d.doctor_id,
       doctor_name: d.doctor_name,
-      specialization: d.specialization
+      specialization: d.specialization,
+      email_address: d.email_address || ''
     };
   }
 
   saveEdit() {
     this.apiService.updateDoctor(this.editForm.doctor_id, this.editForm).subscribe({
       next: () => {
-        this.msg = 'Doctor updated!';
+        this.toast.success('Doctor updated!');
         this.editingId = null;
         this.loadDoctors();
       },
-      error: (err) => this.msg = err.error?.error || 'Failed to update.'
+      error: (err) => this.toast.error(err.error?.error || 'Failed to update.')
     });
   }
 
-  deleteDoctor(d: any) {
-    if (!confirm(`Delete doctor ${d.doctor_name}?`)) return;
+  async deleteDoctor(d: any) {
+    const confirmed = await this.confirm.confirm({
+      title: 'Delete Doctor',
+      message: `Are you sure you want to delete Dr. ${d.doctor_name}? This action cannot be undone.`,
+      confirmText: 'Delete',
+      danger: true
+    });
+    if (!confirmed) return;
     this.apiService.deleteDoctor(d.doctor_id).subscribe({
       next: () => {
-        this.msg = 'Doctor deleted.';
+        this.toast.success('Doctor deleted.');
         this.loadDoctors();
       },
-      error: () => this.msg = 'Failed to delete.'
+      error: () => this.toast.error('Failed to delete.')
     });
   }
 }

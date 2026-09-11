@@ -1,26 +1,54 @@
 <div class="section-card">
   <h3>My Appointments</h3>
-  <div *ngIf="myAppointments.length === 0" class="empty-msg">No booked appointments.</div>
-  <table *ngIf="myAppointments.length > 0" class="info-table">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Day</th>
-        <th>Time</th>
-        <th>Patient</th>
-        <th>Contact</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let a of myAppointments">
-        <td>{{ a.appointment_date }}</td>
-        <td>{{ a.day_of_week }}</td>
-        <td>{{ a.start_time }} - {{ a.end_time }}</td>
-        <td>{{ getPatientName(a.patient_id) }}</td>
-        <td>{{ getPatientContact(a.patient_id) }}</td>
-        <td><span class="status-badge booked">{{ a.status }}</span></td>
-      </tr>
-    </tbody>
-  </table>
+
+  <app-loading-spinner *ngIf="loading" label="Loading your appointments..."></app-loading-spinner>
+
+  <ng-container *ngIf="!loading">
+    <table *ngIf="myAppointments.length > 0" class="info-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Time</th>
+          <th>Patient</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let a of myAppointments">
+          <tr>
+            <td>{{ a.appointment_date }}</td>
+            <td>{{ a.day_of_week }}</td>
+            <td>{{ a.start_time }} - {{ a.end_time }}</td>
+            <td>
+              <a class="patient-link" (click)="toggleDetails(a.patient_id)">
+                <span>{{ getPatientName(a.patient_id) }}</span>
+                <span class="expand-icon">{{ expandedPatientId === a.patient_id ? '&#9650;' : '&#9660;' }}</span>
+              </a>
+            </td>
+            <td><span class="status-badge booked">{{ a.status }}</span></td>
+          </tr>
+          <tr *ngIf="expandedPatientId === a.patient_id" class="patient-detail-row">
+            <td colspan="5">
+              <div class="patient-detail-card">
+                <ng-container *ngIf="getPatientDetails(a.patient_id) as pd">
+                  <div class="patient-detail-item"><strong>Contact:</strong> {{ pd.contact_number || '—' }}</div>
+                  <div class="patient-detail-item"><strong>Email:</strong> {{ pd.email_address || '—' }}</div>
+                  <div class="patient-detail-item"><strong>Date of Birth:</strong> {{ pd.date_of_birth || '—' }}</div>
+                </ng-container>
+                <div class="patient-detail-item" *ngIf="!getPatientDetails(a.patient_id)">No additional patient details available.</div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <div *ngIf="myAppointments.length === 0" class="empty-msg">
+      You have no booked appointments.
+      <div class="empty-cta">
+        <a routerLink="/doctor/schedule" class="btn-book">Add availability to your schedule</a>
+      </div>
+    </div>
+  </ng-container>
 </div>

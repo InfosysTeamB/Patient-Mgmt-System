@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-doctor-schedule',
@@ -9,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class DoctorScheduleComponent implements OnInit {
   mySlots: any[] = [];
+  loading = true;
 
   timeSlots = [
     { start: '09:00:00', end: '10:00:00', label: '09:00 AM - 10:00 AM' },
@@ -24,28 +27,43 @@ export class DoctorScheduleComponent implements OnInit {
     start_time: '',
     end_time: ''
   };
-  msg = '';
 
-  constructor(private apiService: ApiService, private authService: AuthService) {}
+  constructor(private apiService: ApiService, private authService: AuthService, private toast: ToastService, private confirm: ConfirmService) {}
 
   ngOnInit(): void {
     this.loadSlots();
   }
 
   loadSlots() {
+    this.loading = true;
     const entityId = this.authService.getEntityId();
-    this.apiService.getSlots().subscribe((s: any[]) => {
-      this.mySlots = s.filter(sl => sl.doctor_id === entityId);
+    this.apiService.getSlots().subscribe({
+      next: (s: any[]) => {
+        this.mySlots = s.filter(sl => sl.doctor_id === entityId);
+        this.loading = false;
+      },
+      error: () => {
+        this.toast.error('Failed to load schedule.');
+        this.loading = false;
+      }
     });
   }
 
   getSlotForTimeAndDay(time: string, day: string) {
-    return this.mySlots.find(s => s.start_time === time && s.day_of_week === day);
+    const t = (time || '').slice(0, 5);
+    return this.mySlots.find(s => (s.start_time || '').slice(0, 5) === t && s.day_of_week === day);
+  }
+
+  getPatientName(slot: any): string {
+    if (slot.patient_details && slot.patient_details.full_name) {
+      return slot.patient_details.full_name;
+    }
+    return slot.patient_id || '';
   }
 
   createSlot() {
     if (!this.newSlot.appointment_date || !this.newSlot.day_of_week || !this.newSlot.start_time || !this.newSlot.end_time) {
-      this.msg = 'Please fill in all slot fields.';
+      this.toast.error('Please fill in all slot fields.');
       return;
     }
     const payload = {
@@ -55,24 +73,30 @@ export class DoctorScheduleComponent implements OnInit {
     };
     this.apiService.createSlot(payload).subscribe({
       next: () => {
-        this.msg = 'Slot created successfully!';
+        this.toast.success('Slot created successfully!');
         this.newSlot = { appointment_date: '', day_of_week: '', start_time: '', end_time: '' };
         this.loadSlots();
       },
       error: (err) => {
-        this.msg = err.error?.error || 'Failed to create slot.';
+        this.toast.error(err.error?.error || 'Failed to create slot.');
       }
     });
   }
 
-  deleteSlot(slotId: string) {
-    if (!confirm('Delete this slot?')) return;
-    this.apiService.deleteSlot(slotId).subscribe({
+  async deleteSlot(slot: any) {
+    const confirmed = await this.confirm.confirm({
+      title: 'Delete Slot',
+      message: `Delete the ${slot.day_of_week} ${slot.start_time} slot?`,
+      confirmText: 'Delete',
+      danger: true
+    });
+    if (!confirmed) return;
+    this.apiService.deleteSlot(slot.id).subscribe({
       next: () => {
-        this.msg = 'Slot deleted.';
+        this.toast.success('Slot deleted.');
         this.loadSlots();
       },
-      error: () => this.msg = 'Failed to delete slot.'
+      error: () => this.toast.error('Failed to delete slot.')
     });
   }
 }

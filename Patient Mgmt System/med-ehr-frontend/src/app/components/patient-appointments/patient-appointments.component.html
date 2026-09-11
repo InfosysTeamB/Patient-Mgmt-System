@@ -1,26 +1,65 @@
 <div class="section-card">
   <h3>My Appointments</h3>
-  <div *ngIf="myBookings.length === 0" class="empty-msg">No upcoming appointments.</div>
-  <table *ngIf="myBookings.length > 0" class="info-table">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Day</th>
-        <th>Time</th>
-        <th>Doctor</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let b of myBookings">
-        <td>{{ b.appointment_date }}</td>
-        <td>{{ b.day_of_week }}</td>
-        <td>{{ b.start_time }} - {{ b.end_time }}</td>
-        <td>{{ getDoctorName(b.doctor_id) }}</td>
-        <td><span class="status-badge booked">{{ b.status }}</span></td>
-        <td><button class="btn-cancel" (click)="cancelBooking(b.id)">Cancel</button></td>
-      </tr>
-    </tbody>
-  </table>
+
+  <app-loading-spinner *ngIf="loading" label="Loading your appointments..."></app-loading-spinner>
+
+  <ng-container *ngIf="!loading">
+    <!-- Upcoming -->
+    <h4 class="section-subtitle" *ngIf="upcomingBookings.length > 0">Upcoming</h4>
+    <table *ngIf="upcomingBookings.length > 0" class="info-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Time</th>
+          <th>Doctor</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of upcomingBookings">
+          <td>{{ b.appointment_date }}</td>
+          <td>{{ b.day_of_week }}</td>
+          <td>{{ b.start_time }} - {{ b.end_time }}</td>
+          <td>{{ getDoctorName(b.doctor_id) }}</td>
+          <td><span class="status-badge booked">{{ b.status }}</span></td>
+          <td><button class="btn-cancel" (click)="cancelBooking(b.id)">Cancel</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Past -->
+    <h4 class="section-subtitle" *ngIf="pastBookings.length > 0">Past</h4>
+    <table *ngIf="pastBookings.length > 0" class="info-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Time</th>
+          <th>Doctor</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of pastBookings">
+          <td>{{ b.appointment_date }}</td>
+          <td>{{ b.day_of_week }}</td>
+          <td>{{ b.start_time }} - {{ b.end_time }}</td>
+          <td>{{ getDoctorName(b.doctor_id) }}</td>
+          <td><span class="status-badge booked">{{ b.status }}</span></td>
+          <td><span class="past-label">Completed</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty state -->
+    <div *ngIf="myBookings.length === 0" class="empty-msg">
+      You have no appointments yet.
+      <div class="empty-cta">
+        <a routerLink="/patient/book" class="btn-book">Book your first appointment</a>
+      </div>
+    </div>
+  </ng-container>
 </div>

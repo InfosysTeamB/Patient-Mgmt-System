@@ -10,13 +10,6 @@
         <input type="date" [(ngModel)]="newSlot.appointment_date">
       </div>
       <div class="form-group">
-        <label>Day</label>
-        <select [(ngModel)]="newSlot.day_of_week">
-          <option value="" disabled>Select</option>
-          <option *ngFor="let day of weekDays" [value]="day">{{ day }}</option>
-        </select>
-      </div>
-      <div class="form-group">
         <label>Start</label>
         <select [(ngModel)]="newSlot.start_time">
           <option value="" disabled>Select</option>
@@ -38,26 +31,35 @@
   <app-loading-spinner *ngIf="loading" label="Loading your schedule..."></app-loading-spinner>
   <ng-container *ngIf="!loading">
     <div class="date-filter">
-      <label>Filter by Date:</label>
-      <input type="date" [(ngModel)]="selectedDate">
+      <label>From:</label>
+      <input type="date" [(ngModel)]="fromDate" (ngModelChange)="buildGridDates()">
+      <label>To:</label>
+      <input type="date" [(ngModel)]="toDate" (ngModelChange)="buildGridDates()">
       <button class="btn-clear-filter" (click)="clearFilters()">Clear</button>
     </div>
     <div *ngIf="mySlots.length === 0" class="empty-msg">
       You haven't added any availability yet.
       <div class="empty-cta">Use the form above to add your first time slot.</div>
     </div>
-    <table class="grid-table" *ngIf="mySlots.length > 0">
+    <div *ngIf="mySlots.length > 0 && gridDates.length === 0" class="empty-msg">
+      No slots found for the selected date range.
+      <div class="empty-cta">Adjust the From / To dates or click Clear.</div>
+    </div>
+    <table class="grid-table" *ngIf="mySlots.length > 0 && gridDates.length > 0">
       <thead>
         <tr>
-          <th>Time</th>
-          <th *ngFor="let day of weekDays">{{ day }}</th>
+          <th class="time-header">Time</th>
+          <th *ngFor="let date of gridDates" class="date-header">
+            <span class="date-day">{{ formatColumnHeader(date).split('\n')[0] }}</span>
+            <span class="date-day" [class.today]="isToday(date)">{{ formatColumnHeader(date).split('\n')[1] }}</span>
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let t of timeSlots">
-          <td>{{ t.label }}</td>
-          <td *ngFor="let day of weekDays">
-            <ng-container *ngIf="getSlotForTimeAndDay(t.start, day) as slot; else noSlot">
+          <td class="time-col">{{ t.label }}</td>
+          <td *ngFor="let date of gridDates">
+            <ng-container *ngIf="getSlotForTimeAndDate(t.start, date) as slot; else noSlot">
               <div class="slot-cell">
                 <span [class]="'slot-badge ' + (slot.status | lowercase)">{{ slot.status }}</span>
                 <span class="slot-doctor" *ngIf="slot.status === 'Booked' && getPatientName(slot)">{{ getPatientName(slot) }}</span>

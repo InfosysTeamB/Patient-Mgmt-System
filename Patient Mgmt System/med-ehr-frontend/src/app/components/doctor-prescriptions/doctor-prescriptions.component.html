@@ -1,0 +1,83 @@
+<div class="section-card">
+  <h3>Prescriptions</h3>
+
+  <button *ngIf="!showCreateForm" class="btn-add" (click)="showCreateForm = true">+ New Prescription</button>
+
+  <div *ngIf="showCreateForm" class="form-panel">
+    <h4>New Prescription</h4>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Consultation</label>
+        <select [(ngModel)]="newRx.consultation_id">
+          <option value="" disabled>Select</option>
+          <option *ngFor="let c of consultations" [value]="c.consultation_id">{{ getConsultationLabel(c.consultation_id) }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" [(ngModel)]="newRx.prescribed_date">
+      </div>
+    </div>
+    <div *ngIf="getSelectedConsultation()" class="rx-patient-label">
+      Prescribing for: <strong>{{ getPatientName(getSelectedConsultation().patient_id) }}</strong>
+      <span *ngIf="getSelectedConsultation().diagnosis"> — {{ getSelectedConsultation().diagnosis }}</span>
+    </div>
+    <div class="form-group" style="margin-top: 12px;">
+      <label>General Instructions</label>
+      <input type="text" [(ngModel)]="newRx.instructions" placeholder="e.g. Take with food">
+    </div>
+
+    <h4 class="sub-heading-med">Medications</h4>
+    <div *ngFor="let med of newRx.medications; let i = index" class="med-row">
+      <input type="text" [(ngModel)]="med.name" placeholder="Medication name">
+      <input type="text" [(ngModel)]="med.dosage" placeholder="Dosage">
+      <input type="text" [(ngModel)]="med.frequency" placeholder="Frequency">
+      <input type="text" [(ngModel)]="med.duration" placeholder="Duration">
+      <button class="btn-delete-sm" (click)="removeMedication(i)">×</button>
+    </div>
+    <button class="btn-edit-sm" (click)="addMedication()">+ Add Medication</button>
+
+    <div class="form-actions" style="margin-top: 14px;">
+      <button class="btn-primary" (click)="createPrescription()">Create</button>
+      <button class="btn-cancel" (click)="showCreateForm = false">Cancel</button>
+    </div>
+  </div>
+
+  <app-loading-spinner *ngIf="loading" label="Loading prescriptions..."></app-loading-spinner>
+
+  <ng-container *ngIf="!loading">
+    <div *ngIf="sortedPrescriptions.length === 0" class="empty-msg">
+      No prescriptions issued yet.
+      <div class="empty-cta">Use the form above to create your first prescription.</div>
+    </div>
+
+    <table *ngIf="sortedPrescriptions.length > 0" class="info-table">
+      <thead>
+        <tr>
+          <th>Rx ID</th>
+          <th>Date</th>
+          <th>Patient</th>
+          <th>Medications</th>
+          <th>Instructions</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rx of sortedPrescriptions">
+          <td>{{ rx.prescription_id }}</td>
+          <td>{{ rx.prescribed_date }}</td>
+          <td>{{ getPatientName(rx.patient_id) }}</td>
+          <td>
+            <div *ngFor="let m of rx.medications" class="med-summary">
+              <strong>{{ m.name }}</strong> — {{ m.dosage }} · {{ m.frequency }}{{ m.duration ? ' · ' + m.duration : '' }}
+            </div>
+          </td>
+          <td>{{ rx.instructions || '—' }}</td>
+          <td>
+            <button class="btn-delete-sm" (click)="deleteRx(rx)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+</div>

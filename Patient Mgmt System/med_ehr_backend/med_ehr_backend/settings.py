@@ -128,3 +128,12 @@ STATIC_URL = 'static/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'core.auth.FirebaseTokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}

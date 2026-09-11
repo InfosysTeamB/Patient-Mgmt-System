@@ -73,4 +73,47 @@ export class ApiService {
   bookSlot(slotId: string, bookingData: any): Observable<any> {
     return this.http.patch(`${this.baseUrl}/slots/${slotId}/`, bookingData);
   }
+
+  // Consultation methods
+  getConsultations(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/consultations/`);
+  }
+
+  getConsultation(consultationId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/consultations/${consultationId}/`);
+  }
+
+  createConsultation(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/consultations/`, data);
+  }
+
+  updateConsultation(consultationId: string, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/consultations/${consultationId}/`, data);
+  }
+
+  // Prescription methods
+  getPrescriptions(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/prescriptions/`);
+  }
+
+  getPrescription(prescriptionId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/prescriptions/${prescriptionId}/`);
+  }
+
+  createPrescription(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/prescriptions/`, data);
+  }
+
+  updatePrescription(prescriptionId: string, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/prescriptions/${prescriptionId}/`, data);
+  }
+
+  deletePrescription(prescriptionId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/prescriptions/${prescriptionId}/`);
+  }
+
+  // Treatment history
+  getTreatmentHistory(patientId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/treatment-history/${patientId}/`);
+  }
 }

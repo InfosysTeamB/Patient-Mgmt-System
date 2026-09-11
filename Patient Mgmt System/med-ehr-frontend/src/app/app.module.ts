@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RoleSelectorComponent } from './components/role-selector/role-selector.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 // Admin
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
@@ -25,6 +26,12 @@ import { DoctorPortalComponent } from './components/doctor-portal/doctor-portal.
 import { DoctorProfileComponent } from './components/doctor-profile/doctor-profile.component';
 import { DoctorScheduleComponent } from './components/doctor-schedule/doctor-schedule.component';
 import { DoctorAppointmentsComponent } from './components/doctor-appointments/doctor-appointments.component';
+import { DoctorConsultationsComponent } from './components/doctor-consultations/doctor-consultations.component';
+import { DoctorPrescriptionsComponent } from './components/doctor-prescriptions/doctor-prescriptions.component';
+
+// Patient
+import { PatientTreatmentHistoryComponent } from './components/patient-treatment-history/patient-treatment-history.component';
+import { PatientPrescriptionsComponent } from './components/patient-prescriptions/patient-prescriptions.component';
 
 // Shared registrations
 import { PatientRegistrationComponent } from './components/patient-registration/patient-registration.component';
@@ -58,6 +65,10 @@ import { DoctorOverviewComponent } from './components/doctor-overview/doctor-ove
     DoctorProfileComponent,
     DoctorScheduleComponent,
     DoctorAppointmentsComponent,
+    DoctorConsultationsComponent,
+    DoctorPrescriptionsComponent,
+    PatientTreatmentHistoryComponent,
+    PatientPrescriptionsComponent,
     PatientRegistrationComponent,
     DoctorRegistrationComponent,
     AppointmentBookingComponent,
@@ -74,7 +85,9 @@ import { DoctorOverviewComponent } from './components/doctor-overview/doctor-ove
     HttpClientModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

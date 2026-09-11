@@ -5,28 +5,36 @@
 
   <ng-container *ngIf="!loading">
     <div class="date-filter">
-      <label>Filter by Date:</label>
-      <input type="date" [(ngModel)]="selectedDate">
+      <label>Date:</label>
+      <input type="date" [(ngModel)]="selectedDate" (ngModelChange)="buildGridDates()">
       <label>Doctor:</label>
-      <select [(ngModel)]="selectedDoctor">
+      <select [(ngModel)]="selectedDoctor" (ngModelChange)="buildGridDates()">
         <option value="">All Doctors</option>
         <option *ngFor="let d of doctors" [value]="d.doctor_id">Dr. {{ d.doctor_name }}</option>
       </select>
       <button class="btn-clear-filter" (click)="clearFilters()">Clear</button>
     </div>
 
-    <table class="grid-table">
+    <div *ngIf="slots.length > 0 && gridDates.length === 0" class="empty-msg">
+      No available appointments for the selected filter.
+      <div class="empty-cta">Adjust the filters or click Clear to see all slots.</div>
+    </div>
+
+    <table class="grid-table" *ngIf="gridDates.length > 0">
       <thead>
         <tr>
-          <th>Time</th>
-          <th *ngFor="let day of weekDays">{{ day }}</th>
+          <th class="time-header">Time</th>
+          <th *ngFor="let date of gridDates" class="date-header">
+            <span class="date-day">{{ formatColumnHeader(date).split('\n')[0] }}</span>
+            <span class="date-day" [class.today]="isToday(date)">{{ formatColumnHeader(date).split('\n')[1] }}</span>
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let t of timeSlots">
-          <td>{{ t.label }}</td>
-          <td *ngFor="let day of weekDays">
-            <ng-container *ngIf="getSlotForTimeAndDay(t.start, day) as slot; else noSlot">
+          <td class="time-col">{{ t.label }}</td>
+          <td *ngFor="let date of gridDates">
+            <ng-container *ngIf="getSlotForTimeAndDate(t.start, date) as slot; else noSlot">
               <button class="slot-cell bookable" [class.disabled]="slot.status !== 'Available'" [disabled]="slot.status !== 'Available'" (click)="bookAppointment(slot)">
                 <span [class]="'slot-badge ' + (slot.status | lowercase)">{{ slot.status }}</span>
                 <span class="slot-doctor" *ngIf="slot.doctor_id">{{ getDoctorName(slot.doctor_id) }}</span>

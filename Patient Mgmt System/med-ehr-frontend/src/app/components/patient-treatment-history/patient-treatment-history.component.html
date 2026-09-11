@@ -1,0 +1,37 @@
+<div class="section-card">
+  <h3>Treatment History</h3>
+
+  <app-loading-spinner *ngIf="loading" label="Loading treatment history..."></app-loading-spinner>
+
+  <ng-container *ngIf="!loading">
+    <div *ngIf="sortedRecords.length === 0" class="empty-msg">
+      No treatment history yet.
+      <div class="empty-cta">Your consultations and prescriptions will appear here.</div>
+    </div>
+
+    <div *ngFor="let r of sortedRecords" class="history-card">
+      <div class="history-header">
+        <span [class]="'history-badge ' + r.type">{{ r.type === 'consultation' ? 'Consultation' : 'Prescription' }}</span>
+        <span class="history-date">{{ getDate(r) }}</span>
+        <span class="history-doctor">{{ getDoctorName(r.doctor_id) }}</span>
+      </div>
+
+      <div *ngIf="r.type === 'consultation'" class="history-body">
+        <div class="history-line" *ngIf="r.diagnosis"><strong>Diagnosis:</strong> {{ r.diagnosis }}</div>
+        <div class="history-line" *ngIf="r.notes"><strong>Notes:</strong> {{ r.notes }}</div>
+      </div>
+
+      <div *ngIf="r.type === 'prescription'" class="history-body">
+        <div class="history-line" *ngIf="r.instructions"><strong>Instructions:</strong> {{ r.instructions }}</div>
+        <div class="med-list">
+          <div *ngFor="let m of r.medications" class="med-item">
+            <strong>{{ m.name }}</strong>
+            <span>{{ m.dosage }} · {{ m.frequency }}</span>
+            <span *ngIf="m.duration">· {{ m.duration }}</span>
+            <span *ngIf="m.notes" class="med-notes">{{ m.notes }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

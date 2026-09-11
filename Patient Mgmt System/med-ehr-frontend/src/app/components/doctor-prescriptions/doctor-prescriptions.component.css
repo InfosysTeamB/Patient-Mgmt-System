@@ -1,0 +1,43 @@
+.sub-heading-med {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin: 16px 0 10px;
+}
+
+.med-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.med-row input {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: var(--font);
+}
+
+.med-row input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.med-summary {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rx-patient-label {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--color-primary-light, #e8f1fb);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--color-text);
+}

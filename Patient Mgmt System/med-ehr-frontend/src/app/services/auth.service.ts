@@ -37,11 +37,22 @@ export class AuthService {
     return this.user?.entity_id || '';
   }
 
+  getToken(): string {
+    return this.user?.token || '';
+  }
+
   isLoggedIn(): boolean {
     return this.user !== null;
   }
 
   logout(): void {
+    const token = this.getToken();
+    if (token) {
+      fetch('/api/auth/logout/', {
+        method: 'POST',
+        headers: { 'Authorization': 'Token ' + token }
+      }).catch(() => {});
+    }
     this.user = null;
     localStorage.removeItem(STORAGE_KEY);
   }

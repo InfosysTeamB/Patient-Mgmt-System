@@ -189,6 +189,39 @@ a {
   padding-left: 14px;
 }
 
+/* Date-based schedule grid header */
+.grid-table .date-header {
+  text-align: center;
+  white-space: normal;
+  vertical-align: middle;
+}
+
+.date-header .date-day {
+  display: block;
+  font-size: 12px;
+}
+
+.date-header .date-day.today {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.grid-table .time-header,
+.grid-table .time-col {
+  width: 170px;
+  min-width: 170px;
+  text-align: left;
+}
+
+.grid-table .time-col {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
 /* Badges */
 .status-badge,
 .slot-badge {
@@ -204,6 +237,7 @@ a {
 .slot-badge.booked { background: #fef2f2; color: #b91c1c; }
 .status-badge.available,
 .slot-badge.available { background: #f0fdf4; color: #15803d; }
+.status-badge.completed { background: #eff6ff; color: #1d4ed8; }
 .slot-badge.unassigned { background: #f1f5f9; color: #64748b; }
 
 /* Forms */

@@ -29,4 +29,28 @@ class AppointmentSlot:
     day_of_week: str = ""         # e.g., "Monday"
     start_time: str = ""          # e.g., "09:00"
     end_time: str = ""            # e.g., "10:00"
-    status: str = "Available"     # "Available" or "Booked"
+    status: str = "Available"     # "Available", "Booked", or "Completed"
+
+
+@dataclass
+class ConsultationRecord:
+    """Stores a completed consultation linked to a Booked slot."""
+    consultation_id: str   # e.g., "C-YYYYMMDDHHMMSS", used as Firestore doc ID
+    slot_id: str           # References AppointmentSlot
+    doctor_id: str         # References DoctorProfile
+    patient_id: str        # References PatientRecord
+    consultation_date: str # ISO format "YYYY-MM-DD"
+    notes: str             # Doctor's consultation notes
+    diagnosis: str         # Diagnosis summary
+
+
+@dataclass
+class PrescriptionRecord:
+    """Stores medications prescribed as part of a consultation."""
+    prescription_id: str   # e.g., "Rx-YYYYMMDDHHMMSS", used as Firestore doc ID
+    consultation_id: str   # References ConsultationRecord
+    patient_id: str        # References PatientRecord
+    doctor_id: str         # References DoctorProfile
+    medications: list      # List of {name, dosage, frequency, duration, notes}
+    instructions: str      # General instructions
+    prescribed_date: str   # ISO format "YYYY-MM-DD"

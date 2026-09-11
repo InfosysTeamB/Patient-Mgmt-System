@@ -1,0 +1,73 @@
+<div class="section-card">
+  <h3>Consultations</h3>
+
+  <app-loading-spinner *ngIf="loading" label="Loading consultations..."></app-loading-spinner>
+
+  <ng-container *ngIf="!loading">
+    <!-- Pending Consultations -->
+    <h4 class="sub-heading">Pending (Booked)</h4>
+    <div *ngIf="bookedSlots.length === 0" class="empty-msg">No pending consultations.</div>
+
+    <table *ngIf="bookedSlots.length > 0" class="info-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Time</th>
+          <th>Patient</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of bookedSlots">
+          <ng-container *ngIf="completingSlotId === s.id; else viewRow">
+            <td>{{ s.appointment_date }}</td>
+            <td>{{ s.day_of_week }}</td>
+            <td>{{ s.start_time }}</td>
+            <td>{{ getPatientName(s.patient_id) }}</td>
+            <td class="complete-form">
+              <input type="text" placeholder="Diagnosis (required)" [(ngModel)]="consultationForm.diagnosis" class="complete-input">
+              <textarea placeholder="Notes (optional)" [(ngModel)]="consultationForm.notes" class="complete-textarea"></textarea>
+              <button class="btn-save-sm" (click)="completeConsultation(s)">Save</button>
+              <button class="btn-cancel-sm" (click)="completingSlotId = null">Cancel</button>
+            </td>
+          </ng-container>
+          <ng-template #viewRow>
+            <td>{{ s.appointment_date }}</td>
+            <td>{{ s.day_of_week }}</td>
+            <td>{{ s.start_time }}</td>
+            <td>{{ getPatientName(s.patient_id) }}</td>
+            <td>
+              <button class="btn-edit-sm" (click)="startComplete(s)">Complete</button>
+            </td>
+          </ng-template>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Completed Consultations -->
+    <h4 class="sub-heading" style="margin-top: 30px;">Completed</h4>
+    <div *ngIf="completedSlots.length === 0" class="empty-msg">No completed consultations.</div>
+
+    <table *ngIf="completedSlots.length > 0" class="info-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Time</th>
+          <th>Patient</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of completedSlots">
+          <td>{{ s.appointment_date }}</td>
+          <td>{{ s.day_of_week }}</td>
+          <td>{{ s.start_time }}</td>
+          <td>{{ getPatientName(s.patient_id) }}</td>
+          <td><span class="status-badge completed">Completed</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+</div>

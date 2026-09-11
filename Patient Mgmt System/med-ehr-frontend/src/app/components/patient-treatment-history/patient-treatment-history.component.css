@@ -1,0 +1,70 @@
+.history-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  background: #fbfbfc;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.history-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.history-badge.consultation { background: #e0f2fe; color: #0369a1; }
+.history-badge.prescription { background: #fef3c7; color: #92400e; }
+
+.history-date {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.history-doctor {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.history-body {
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.history-line {
+  margin-bottom: 4px;
+}
+
+.med-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.med-item {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.med-notes {
+  color: var(--color-text-muted);
+  width: 100%;
+  font-size: 12px;
+}

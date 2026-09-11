@@ -1,0 +1,33 @@
+<div class="section-card">
+  <h3>My Prescriptions</h3>
+
+  <app-loading-spinner *ngIf="loading" label="Loading prescriptions..."></app-loading-spinner>
+
+  <ng-container *ngIf="!loading">
+    <div *ngIf="sortedPrescriptions.length === 0" class="empty-msg">
+      No prescriptions yet.
+      <div class="empty-cta">Prescriptions issued by your doctors will appear here.</div>
+    </div>
+
+    <div *ngFor="let rx of sortedPrescriptions" class="rx-card">
+      <div class="rx-header">
+        <span class="rx-id">{{ rx.prescription_id }}</span>
+        <span class="rx-date">{{ rx.prescribed_date }}</span>
+        <span class="rx-doctor">{{ getDoctorName(rx.doctor_id) }}</span>
+      </div>
+
+      <div class="rx-instructions" *ngIf="rx.instructions">
+        <strong>Instructions:</strong> {{ rx.instructions }}
+      </div>
+
+      <div class="rx-meds">
+        <div *ngFor="let m of rx.medications" class="rx-med">
+          <div class="rx-med-name">{{ m.name }}</div>
+          <div class="rx-med-detail">{{ m.dosage }} · {{ m.frequency }}</div>
+          <div class="rx-med-detail" *ngIf="m.duration">Duration: {{ m.duration }}</div>
+          <div class="rx-med-notes" *ngIf="m.notes">{{ m.notes }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

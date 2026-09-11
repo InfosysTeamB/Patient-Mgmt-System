@@ -15,6 +15,7 @@ export class PatientBookComponent implements OnInit {
   loading = true;
   selectedDate: string = '';
   selectedDoctor: string = '';
+  gridDates: string[] = [];
 
   timeSlots = [
     { start: '09:00:00', end: '10:00:00', label: '09:00 AM - 10:00 AM' },
@@ -22,7 +23,6 @@ export class PatientBookComponent implements OnInit {
     { start: '11:00:00', end: '12:00:00', label: '11:00 AM - 12:00 PM' },
     { start: '12:00:00', end: '13:00:00', label: '12:00 PM - 01:00 PM' }
   ];
-  weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   constructor(private apiService: ApiService, private authService: AuthService, private toast: ToastService, private confirm: ConfirmService) {}
 
@@ -36,6 +36,7 @@ export class PatientBookComponent implements OnInit {
     this.apiService.getSlots().subscribe({
       next: (s: any[]) => {
         this.slots = s;
+        this.buildGridDates();
         this.loading = false;
       },
       error: () => {
@@ -43,6 +44,20 @@ export class PatientBookComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  buildGridDates() {
+    let dateSlots = this.slots;
+    if (this.selectedDoctor) {
+      dateSlots = dateSlots.filter(s => s.doctor_id === this.selectedDoctor);
+    }
+    if (this.selectedDate) {
+      dateSlots = dateSlots.filter(s => s.appointment_date === this.selectedDate);
+    }
+
+    let dates = [...new Set(dateSlots.map(s => s.appointment_date).filter(Boolean))];
+    dates.sort();
+    this.gridDates = dates;
   }
 
   getDoctorName(doctorId: string): string {
@@ -54,17 +69,28 @@ export class PatientBookComponent implements OnInit {
     return (t || '').slice(0, 5);
   }
 
-  getSlotForTimeAndDay(time: string, day: string) {
+  getSlotForTimeAndDate(time: string, date: string) {
     return this.slots.find(s =>
-      this.normalizeTime(s.start_time) === this.normalizeTime(time) && s.day_of_week === day &&
-      (!this.selectedDate || s.appointment_date === this.selectedDate) &&
+      this.normalizeTime(s.start_time) === this.normalizeTime(time) && s.appointment_date === date &&
       (!this.selectedDoctor || s.doctor_id === this.selectedDoctor)
     );
+  }
+
+  formatColumnHeader(date: string): string {
+    const d = new Date(date + 'T00:00:00');
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+    const monthDay = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `${dayName}\n${monthDay}`;
+  }
+
+  isToday(date: string): boolean {
+    return date === new Date().toISOString().slice(0, 10);
   }
 
   clearFilters() {
     this.selectedDate = '';
     this.selectedDoctor = '';
+    this.buildGridDates();
   }
 
   async bookAppointment(slot: any) {

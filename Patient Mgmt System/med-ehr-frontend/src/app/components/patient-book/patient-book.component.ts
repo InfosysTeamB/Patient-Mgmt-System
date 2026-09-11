@@ -65,6 +65,11 @@ export class PatientBookComponent implements OnInit {
     return d ? `Dr. ${d.doctor_name}` : '';
   }
 
+  selectDoctor(doctorId: string) {
+    this.selectedDoctor = this.selectedDoctor === doctorId ? '' : doctorId;
+    this.buildGridDates();
+  }
+
   private normalizeTime(t: string): string {
     return (t || '').slice(0, 5);
   }

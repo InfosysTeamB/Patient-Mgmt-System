@@ -1,23 +1,35 @@
 <div class="section-card">
-  <h3>Book an Appointment</h3>
+  <h3>Find a Doctor &amp; Book an Appointment</h3>
 
   <app-loading-spinner *ngIf="loading" label="Loading available slots..."></app-loading-spinner>
 
   <ng-container *ngIf="!loading">
+    <div class="doctor-list">
+      <button class="doctor-card" [class.active]="!selectedDoctor"
+              (click)="selectedDoctor=''; buildGridDates()">
+        <span class="doc-name">All Doctors</span>
+      </button>
+      <button *ngFor="let d of doctors" class="doctor-card"
+              [class.active]="selectedDoctor === d.doctor_id"
+              (click)="selectDoctor(d.doctor_id)">
+        <span class="doc-name">{{ d.doctor_name }}</span>
+        <span class="doc-spec">{{ d.specialization }}</span>
+      </button>
+    </div>
+
     <div class="date-filter">
       <label>Date:</label>
       <input type="date" [(ngModel)]="selectedDate" (ngModelChange)="buildGridDates()">
-      <label>Doctor:</label>
-      <select [(ngModel)]="selectedDoctor" (ngModelChange)="buildGridDates()">
-        <option value="">All Doctors</option>
-        <option *ngFor="let d of doctors" [value]="d.doctor_id">Dr. {{ d.doctor_name }}</option>
-      </select>
-      <button class="btn-clear-filter" (click)="clearFilters()">Clear</button>
+      <button class="btn-clear-filter" (click)="clearFilters()">Clear Filters</button>
+    </div>
+
+    <div class="selected-info" *ngIf="selectedDoctor">
+      Showing slots for <strong>{{ getDoctorName(selectedDoctor) }}</strong>
     </div>
 
     <div *ngIf="slots.length > 0 && gridDates.length === 0" class="empty-msg">
       No available appointments for the selected filter.
-      <div class="empty-cta">Adjust the filters or click Clear to see all slots.</div>
+      <div class="empty-cta">Adjust the filters or click Clear Filters to see all slots.</div>
     </div>
 
     <table class="grid-table" *ngIf="gridDates.length > 0">
@@ -37,7 +49,7 @@
             <ng-container *ngIf="getSlotForTimeAndDate(t.start, date) as slot; else noSlot">
               <button class="slot-cell bookable" [class.disabled]="slot.status !== 'Available'" [disabled]="slot.status !== 'Available'" (click)="bookAppointment(slot)">
                 <span [class]="'slot-badge ' + (slot.status | lowercase)">{{ slot.status }}</span>
-                <span class="slot-doctor" *ngIf="slot.doctor_id">{{ getDoctorName(slot.doctor_id) }}</span>
+                <span class="slot-doctor" *ngIf="!selectedDoctor">{{ getDoctorName(slot.doctor_id) }}</span>
               </button>
             </ng-container>
             <ng-template #noSlot><span class="slot-badge unassigned">-</span></ng-template>
@@ -46,6 +58,6 @@
       </tbody>
     </table>
 
-    <div class="booking-hint">Click an <span class="status-badge available">Available</span> slot above to book it.</div>
+    <div class="booking-hint" *ngIf="gridDates.length > 0">Click an <span class="status-badge available">Available</span> slot to book it.</div>
   </ng-container>
 </div>

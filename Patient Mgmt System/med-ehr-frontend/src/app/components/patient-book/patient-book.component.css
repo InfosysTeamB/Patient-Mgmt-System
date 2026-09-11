@@ -1,1 +1,73 @@
 /* Styles provided globally in src/styles.css */
+
+.doctor-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.doctor-card {
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  cursor: pointer;
+  text-align: center;
+  min-width: 120px;
+  transition: border-color 0.15s, background 0.15s;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doctor-card:hover {
+  border-color: var(--color-primary);
+}
+
+.doctor-card.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.doctor-card .doc-name {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.doctor-card .doc-spec {
+  color: var(--color-text-muted);
+  font-size: 11.5px;
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.date-filter label {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.date-filter input {
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.selected-info {
+  background: var(--color-primary-bg);
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 14px;
+}

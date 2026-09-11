@@ -243,10 +243,23 @@ Pre-seeded in Firestore via `python manage.py seed_demo_data`:
 |---------|-----------------------|--------------|
 | Admin   | admin@medehr.com      | admin123     |
 | Patient | patient@medehr.com    | patient123   |
+| Patient | alice@medehr.com      | patient123   |
+| Patient | bob@medehr.com        | patient123   |
+| Patient | carol@medehr.com      | patient123   |
+| Patient | david@medehr.com      | patient123   |
+| Patient | emma@medehr.com       | patient123   |
+| Patient | farhan@medehr.com     | patient123   |
 | Doctor  | wilson@medehr.com     | doctor123    |
 | Doctor  | sarah@medehr.com      | doctor123    |
 | Doctor  | james@medehr.com      | doctor123    |
 | Doctor  | emily@medehr.com      | doctor123    |
+| Doctor  | rachel@medehr.com     | doctor123    |
+| Doctor  | michael@medehr.com    | doctor123    |
+| Doctor  | priya@medehr.com      | doctor123    |
+
+> **Pending doctor** (approval queue demo): `sam@medehr.com` (D-107) is `pending` and cannot log in until approved.
+> **Rejected doctor** (login-block demo): `nora@medehr.com` (D-108) is `rejected`; login always returns a rejection message.
+> All patient passwords are `patient123`; all doctor passwords are `doctor123`.
 
 ### How Auth Works
 

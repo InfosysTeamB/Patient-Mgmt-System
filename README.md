@@ -263,7 +263,7 @@ Pre-seeded in Firestore via `python manage.py seed_demo_data`:
 
 ### How Auth Works
 
-1. **Login** (`POST /api/auth/login/`): Accepts email/password, queries Firestore `users` collection, performs plaintext password comparison, generates an opaque token stored in the `tokens` collection, and returns user details (token, id, email, name, role, entity_id)
+1. **Login** (`POST /api/auth/login/`): Accepts email/password, queries Firestore `users` collection, performs hashed password verification (Django PBKDF2), generates an opaque token stored in the `tokens` collection, and returns user details (token, id, email, name, role, entity_id). Legacy plaintext records are automatically upgraded to hashes on first successful login.
 2. **Registration** (`POST /api/auth/register/`): Creates a new user record in Firestore.
    - **Patients**: auto-generates a unique `entity_id` (e.g., `P-20260904123456`), creates a profile record, and returns a token immediately (auto-login).
    - **Doctors**: creates a profile with `status: "pending"` and does **not** issue a token. The doctor must wait for an admin to approve the account before they can log in.
@@ -437,7 +437,7 @@ All endpoints are prefixed with `/api/`.
 | Field       | Type   | Description                                    |
 |-------------|--------|------------------------------------------------|
 | `email`     | string | User email (login identifier)                  |
-| `password`  | string | Password (stored in plaintext)                 |
+| `password`  | string | Password (stored as a Django PBKDF2 hash)   |
 | `name`      | string | User's display name                            |
 | `role`      | string | One of: `admin`, `patient`, `doctor`           |
 | `entity_id`| string | Links to patient/doctor profile (empty for admin) |
@@ -624,8 +624,8 @@ When a patient or doctor self-registers through the auth form:
 
 ## Known Limitations
 
-1. **Plaintext Passwords** - User passwords are stored and compared in plaintext in Firestore
-2. **No Password Hashing** - Django's built-in password validators are bypassed by the custom auth system
+1. **Legacy Plaintext Passwords** - Data seeded prior to the password-hashing fix stores plaintext passwords. These are upgraded to hashes automatically on the user's first successful login; re-running `seed_demo_data` also re-seeds all demo users with hashed passwords.
+2. **Shared Default Password** - Admin-created patient/doctor accounts use a single default password (`medehr@123`), which is stored hashed but is identical for all such accounts until changed.
 3. **No Token Expiry** - Auth tokens have no expiration; they remain valid until logout
 4. **Firebase Key in Repo** - `serviceAccountKey.json` with private key is committed to the repository
 5. **CORS Wide Open** - `CORS_ALLOW_ALL_ORIGINS = True` allows any origin

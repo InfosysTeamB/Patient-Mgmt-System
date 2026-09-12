@@ -1,5 +1,6 @@
 import datetime
 import secrets
+from django.contrib.auth.hashers import check_password, make_password
 from rest_framework import viewsets, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import api_view, permission_classes, action
@@ -46,6 +47,28 @@ def _generate_token():
     return secrets.token_hex(16)
 
 
+def _verify_password(raw, stored, user_ref):
+    """Verify a submitted password against the stored value.
+
+    Migrates legacy plaintext records to a hashed value on first login.
+    `user_ref` is the Firestore DocumentReference for the user record.
+    """
+    stored = stored or ''
+
+    if stored.startswith('pbkdf2_sha256$'):
+        try:
+            if check_password(raw, stored, setter=lambda new: user_ref.update({'password': new})):
+                return True
+        except (ValueError, TypeError):
+            pass
+
+    if stored and secrets.compare_digest(str(stored), str(raw)):
+        user_ref.update({'password': make_password(raw)})
+        return True
+
+    return False
+
+
 def _store_token(user_id, role, entity_id):
     """Create/overwrite the token document for a user."""
     token = _generate_token()
@@ -73,7 +96,7 @@ def _create_user_for_profile(email, name, role, entity_id):
 
     db.collection(USERS_COL).add({
         "email": email,
-        "password": DEFAULT_PROFILE_PASSWORD,
+        "password": make_password(DEFAULT_PROFILE_PASSWORD),
         "name": name,
         "role": role,
         "entity_id": entity_id,
@@ -718,7 +741,7 @@ def login_view(request):
     docs = db.collection(USERS_COL).where(filter=FieldFilter('email', '==', email)).stream()
     for doc in docs:
         user = doc.to_dict()
-        if user.get('password') == password:
+        if _verify_password(password, user.get('password'), doc.reference):
             role = user['role']
             entity_id = user.get('entity_id', '')
 
@@ -800,7 +823,7 @@ def register_view(request):
 
     doc_ref = db.collection(USERS_COL).add({
         "email": email,
-        "password": password,
+        "password": make_password(password),
         "name": name,
         "role": role,
         "entity_id": entity_id,

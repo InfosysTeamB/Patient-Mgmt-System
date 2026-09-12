@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.contrib.auth.hashers import make_password
 from google.cloud.firestore_v1.base_query import FieldFilter
 from firebase_config import db
 
@@ -290,7 +291,13 @@ class Command(BaseCommand):
             existing = db.collection(USERS_COL).where(filter=FieldFilter('email', '==', user['email'])).stream()
             for doc in existing:
                 doc.reference.delete()
-            db.collection(USERS_COL).add(user)
+            db.collection(USERS_COL).add({
+                "email": user['email'],
+                "password": make_password(user['password']),
+                "name": user['name'],
+                "role": user['role'],
+                "entity_id": user['entity_id'],
+            })
             self.stdout.write(f'  Created user: {user["email"]} ({user["role"]})')
 
         self.stdout.write('Seeding demo patients...')

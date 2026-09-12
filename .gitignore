@@ -1,0 +1,22 @@
+# Secrets - never commit
+**/serviceAccountKey.json
+**/firebase-adminsdk*.json
+*.env
+.env.local
+
+# Python
+venv/
+__pycache__/
+*.pyc
+db.sqlite3
+
+# Node / Angular
+node_modules/
+dist/
+coverage/
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
